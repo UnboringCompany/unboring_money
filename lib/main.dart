@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'add_depense.dart';
+import 'screens/add_depense.dart';
 
 void main() {
   runApp(UnboringMoneyApp());

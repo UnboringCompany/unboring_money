@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'widget/ToggleButtonSelectionAdder.dart';
+import '../widget/ToggleButtonSelectionAdder.dart';
 
 class AddExpensePage extends StatefulWidget {
   @override
@@ -213,7 +213,6 @@ class AccountForm extends StatelessWidget {
       children: [
         ExpenseTextField(label: 'Nom du compte'),
         SizedBox(height: 16),
-        ExpenseTextField(label: 'Numéro de compte'),
       ],
     );
   }
