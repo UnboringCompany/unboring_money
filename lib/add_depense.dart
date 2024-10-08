@@ -27,6 +27,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               primary: Colors.teal.shade700, // Couleur du bouton OK et de la date sélectionnée
               onPrimary: Colors.white,       // Couleur du texte sur le bouton OK
               onSurface: Colors.teal.shade900, // Couleur du texte (jours, mois, années)
+
             ),
             buttonTheme: ButtonThemeData(
               textTheme: ButtonTextTheme.primary, // Couleur du texte sur les boutons
@@ -76,8 +77,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
             ,
             SizedBox(height: 16),
             // Utilisation du widget ToggleButtonSelectionAdder
-            Center(child:
-            ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0), // Marge verticale autour du toggle
+              child: 
+              Center(
+                child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+              ),
+
             ),
             SizedBox(height: 16),
             if (_selectedTab == 0) ExpenseForm(selectDate: _selectDate, selectedDate: selectedDate),
