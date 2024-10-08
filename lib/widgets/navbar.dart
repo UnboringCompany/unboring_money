@@ -28,7 +28,7 @@ class UnboringNavBar extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(
-              Icons.pie_chart_outline,
+              Icons.pie_chart,
               color: Color(0xFF109186),
             ),
             onPressed: () {
