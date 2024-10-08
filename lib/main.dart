@@ -68,9 +68,7 @@ class _HomePageState extends State<HomePage> {
           TransactionList(transactions: widget.transactions, upcomingTransactions: widget.upcommingTransactions),
         ],
       ),
-      floatingActionButton: FloatingAdd(
-        onPressed: () {},
-      ),
+      floatingActionButton: FloatingAdd(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const UnboringNavBar(),
     );

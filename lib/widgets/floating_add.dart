@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
 class FloatingAdd extends StatelessWidget{
-  
-  final VoidCallback onPressed;
-  const FloatingAdd({super.key, required this.onPressed});
+
+  const FloatingAdd({super.key});
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-        onPressed: onPressed,
+        onPressed: () {
+          if (ModalRoute.of(context)?.settings.name != '/add') {
+            Navigator.pushNamed(context, '/add');
+          }
+        },
         shape: const CircleBorder(),
         backgroundColor: const Color(0xFF109186),
         child: const Icon(Icons.add, color: Color(0xFFF0FDFA)),
