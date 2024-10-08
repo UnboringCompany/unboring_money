@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'add_depense.dart';
+import 'package:unboring_money/screens/my_accounts.dart';
+import 'package:unboring_money/screens/my_budget.dart';
+import 'package:unboring_money/screens/settings.dart';
+import 'package:unboring_money/screens/stats.dart';
+import 'screens/add_depense.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
 import 'package:unboring_money/widgets/transaction_list.dart';
@@ -24,7 +28,10 @@ class UnboringMoneyApp extends StatelessWidget {
       routes: {
         '/': (context) => HomePage(),
         '/add': (context) => AddExpensePage(),
-        // Ajoutez d'autres routes ici
+        '/stats': (context) => StatsPage(),
+        '/wallet': (context) => MyAccountsPage(),
+        '/budget': (context) => MyBudgetPage(),
+        '/settings': (context) => SettingsPage(),
       },
     );
   }
@@ -71,7 +78,7 @@ class _HomePageState extends State<HomePage> {
           TransactionList(transactions: widget.transactions, upcomingTransactions: widget.upcommingTransactions),
         ],
       ),
-      floatingActionButton: FloatingAdd(),
+      floatingActionButton: const FloatingAdd(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const UnboringNavBar(),
     );
