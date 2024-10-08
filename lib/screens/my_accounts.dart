@@ -15,9 +15,19 @@ class _MyAccountsPageState extends State<MyAccountsPage> {
       backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
-        title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        title: const Text('Mes comptes', style: TextStyle(fontWeight: FontWeight.w500)),
         backgroundColor: const Color(0xFFF0FDFA),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              //Pop up to add a new account
+              print("Add a new account");
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

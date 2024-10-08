@@ -15,7 +15,8 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
-        title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        title: const Text('Paramètres', style: TextStyle(fontWeight: FontWeight.w500)),
         backgroundColor: const Color(0xFFF0FDFA),
         elevation: 0,
       ),

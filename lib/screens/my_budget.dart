@@ -15,9 +15,19 @@ class _MyBudgetPageState extends State<MyBudgetPage> {
       backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
-        title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
+        title: const Text('Mon budget', style: TextStyle(fontWeight: FontWeight.w500)),
         backgroundColor: const Color(0xFFF0FDFA),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              //Pop up to add a new budget
+              print("Add a new budget");
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

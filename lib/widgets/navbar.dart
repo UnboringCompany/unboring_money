@@ -22,7 +22,7 @@ class UnboringNavBar extends StatelessWidget {
             ),
             onPressed: () {
               if (ModalRoute.of(context)?.settings.name != '/') {
-                Navigator.pushNamed(context, '/');
+                Navigator.pushReplacementNamed(context, '/');
               }
             },
           ),
@@ -33,7 +33,7 @@ class UnboringNavBar extends StatelessWidget {
             ),
             onPressed: () {
               if (ModalRoute.of(context)?.settings.name != '/stats') {
-                Navigator.pushNamed(context, '/stats');
+                Navigator.pushReplacementNamed(context, '/stats');
               }
             },
           ),
@@ -45,7 +45,7 @@ class UnboringNavBar extends StatelessWidget {
             ),
             onPressed: () {
               if (ModalRoute.of(context)?.settings.name != '/wallet') {
-                Navigator.pushNamed(context, '/wallet');
+                Navigator.pushReplacementNamed(context, '/wallet');
               }
             },
           ),
@@ -56,7 +56,7 @@ class UnboringNavBar extends StatelessWidget {
             ),
             onPressed: () {
               if (ModalRoute.of(context)?.settings.name != '/settings') {
-                Navigator.pushNamed(context, '/settings');
+                Navigator.pushReplacementNamed(context, '/settings');
               }
             },
           ),
