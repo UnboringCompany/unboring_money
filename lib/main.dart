@@ -65,7 +65,7 @@ class BudgetSection extends StatelessWidget {
             onPressed: () {},
             child: Text('Mon budget'),
             style: ElevatedButton.styleFrom(
-              primary: Colors.teal[400],
+              backgroundColor: Colors.teal[400],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
