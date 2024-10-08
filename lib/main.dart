@@ -15,12 +15,17 @@ class UnboringMoneyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'UnboringMoney',
-      home: HomePage(),
       theme: ThemeData(
         primaryColor: const Color(0xFF109186),
         fontFamily: 'Inter',
       ),
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/add': (context) => AddExpensePage(),
+        // Ajoutez d'autres routes ici
+      },
     );
   }
 }
@@ -46,20 +51,18 @@ class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() => _HomePageState();
-
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
-      scrolledUnderElevation: 0.0,
-      title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
-      backgroundColor: const Color(0xFFF0FDFA),
-      elevation: 0,
+        scrolledUnderElevation: 0.0,
+        title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
+        backgroundColor: const Color(0xFFF0FDFA),
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -100,7 +103,6 @@ class BudgetSection extends StatelessWidget {
             'Reste à dépenser pour les $daysLeft prochains jours',
             style: const TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w300),
           ),
-       
           Text(
             '${budgetRestant.toStringAsFixed(2)}€',
             style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
@@ -121,9 +123,3 @@ class BudgetSection extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
