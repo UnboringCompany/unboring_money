@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'add_depense.dart';
+
 void main() {
   runApp(UnboringMoneyApp());
 }
@@ -9,185 +11,116 @@ class UnboringMoneyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'UnboringMoney',
-      home: HomePage(),
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: HomePage(), // Page principale
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  final double budgetRestant = 1850.45;
+// Page principale
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  // Liste des widgets pour chaque écran de la barre de navigation
+  final List<Widget> _pages = [
+    MainScreen(),  // Ecran principal
+    Center(child: Text('Statistiques')), // Placeholder pour la section "Statistiques"
+    Center(child: Text('Compte')),       // Placeholder pour une autre section
+    Center(child: Text('Paramètres')),   // Placeholder pour les paramètres
+  ];
+
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      // Lorsqu'on clique sur le bouton Plus, on navigue vers la page d'ajout d'une dépense
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AddExpensePage()),
+      );
+    } else {
+      // Sinon, on change simplement l'index de la page
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal[50], // Couleur d'arrière-plan similaire
-      appBar: AppBar(
-        title: Text('UnboringMoney'),
+      backgroundColor: Colors.teal[50],
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.teal[100],
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          BudgetSection(budgetRestant: budgetRestant),
-          TransactionList(),
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pie_chart_outline),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline), // Bouton Plus
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: '',
+          ),
         ],
       ),
-      bottomNavigationBar: BottomNavBar(),
     );
   }
 }
 
-// Section du budget
-class BudgetSection extends StatelessWidget {
-  final double budgetRestant;
-
-  BudgetSection({required this.budgetRestant});
-
+// Écran principal simulé (là où tu as la liste des dépenses)
+class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.teal[100],
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.teal[100],
+        title: Text('UnboringMoney'),
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
         children: [
           Text(
             'Reste à dépenser pour les 22 prochains jours',
-            style: TextStyle(fontSize: 16, color: Colors.black54),
+            style: TextStyle(fontSize: 16),
           ),
-          SizedBox(height: 8),
           Text(
-            '${budgetRestant.toStringAsFixed(2)}€',
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text('Mon budget'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal[400],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
+            '1850,45€',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: Text('Dépenses récentes')),
+              Expanded(child: Text('À venir')),
+            ],
+          ),
+          // Exemples de dépenses (remplace par tes données)
+          ListTile(title: Text('Carrefour'), subtitle: Text('47,65€')),
+          ListTile(title: Text('Auchan'), subtitle: Text('47,65€')),
+          ListTile(title: Text('Lideule'), subtitle: Text('47,65€')),
+          // Ajoute d'autres widgets pour l'interface principale
         ],
       ),
-    );
-  }
-}
-
-// Liste des transactions récentes
-class TransactionList extends StatelessWidget {
-  final List<Map<String, String>> transactions = [
-    {'name': 'Carrefour', 'date': '04/10/2024', 'amount': '47,65€'},
-    {'name': 'Auchan', 'date': '03/10/2024', 'amount': '47,65€'},
-    {'name': 'Lideule', 'date': '02/10/2024', 'amount': '47,65€'},
-    {'name': 'Action', 'date': '01/10/2024', 'amount': '47,65€'},
-    {'name': 'H&M', 'date': '01/10/2024', 'amount': '47,65€'},
-    {'name': 'Fnac', 'date': '01/10/2024', 'amount': '47,65€'},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        color: Colors.teal[200],
-        child: Column(
-          children: [
-            ToggleButtonsSection(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: transactions.length,
-                itemBuilder: (context, index) {
-                  return TransactionItem(
-                    name: transactions[index]['name']!,
-                    date: transactions[index]['date']!,
-                    amount: transactions[index]['amount']!,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Élément de transaction individuel
-class TransactionItem extends StatelessWidget {
-  final String name;
-  final String date;
-  final String amount;
-
-  TransactionItem({required this.name, required this.date, required this.amount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListTile(
-        title: Text(name),
-        subtitle: Text(date),
-        trailing: Text(amount),
-      ),
-    );
-  }
-}
-
-// Section des onglets "Récentes" et "A venir"
-class ToggleButtonsSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ToggleButtons(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text('Récentes'),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text('A venir'),
-          ),
-        ],
-        isSelected: [true, false], // L'onglet "Récentes" est activé par défaut
-        onPressed: (index) {},
-        color: Colors.black54,
-        selectedColor: Colors.teal[700],
-        fillColor: Colors.teal[300],
-        borderRadius: BorderRadius.circular(20),
-      ),
-    );
-  }
-}
-
-// Barre de navigation inférieure
-class BottomNavBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Colors.teal[100],
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.pie_chart_outline),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: '',
-        ),
-      ],
     );
   }
 }
