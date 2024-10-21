@@ -40,7 +40,18 @@ class UnboringMoneyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
+
+  const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+
   final double budgetRestant = 1850.45;
+
+   final List<Map<String, String>> upcommingTransactions = [
+      {'name': 'EDF', 'date': '15/10/2024', 'amount': '47,65€'},
+      {'name': 'Loyer', 'date': '15/10/2024', 'amount': '47,65€'},
+    ];
 
   final List<Map<String, String>> transactions = [
     {'name': 'Carrefour', 'date': '04/10/2024', 'amount': '47,65€'},
@@ -51,15 +62,28 @@ class HomePage extends StatefulWidget {
     {'name': 'Fnac', 'date': '01/10/2024', 'amount': '47,65€'},
   ];
 
-  final List<Map<String, String>> upcommingTransactions = [
-    {'name': 'EDF', 'date': '15/10/2024', 'amount': '47,65€'},
-    {'name': 'Loyer', 'date': '15/10/2024', 'amount': '47,65€'},
+  // Liste des widgets pour chaque écran de la barre de navigation
+  final List<Widget> _pages = [
+    const MainScreen(),  // Ecran principal
+    const Center(child: Text('Statistiques')), // Placeholder pour la section "Statistiques"
+    const Center(child: Text('Compte')),       // Placeholder pour une autre section
+    const Center(child: Text('Paramètres')),   // Placeholder pour les paramètres
   ];
 
-  HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      // Lorsqu'on clique sur le bouton Plus, on navigue vers la page d'ajout d'une dépense
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AddExpensePage()),
+      );
+    } else {
+      // Sinon, on change simplement l'index de la page
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
 }
 
 class _HomePageState extends State<HomePage> {
