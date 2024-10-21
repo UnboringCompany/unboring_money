@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unboring_money/widgets/accounts_list.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
 
@@ -12,6 +13,7 @@ class _MyAccountsPageState extends State<MyAccountsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
@@ -24,14 +26,14 @@ class _MyAccountsPageState extends State<MyAccountsPage> {
             icon: const Icon(Icons.add),
             onPressed: () {
               //Pop up to add a new account
-              print("Add a new account");
+              Navigator.of(context).pushNamed('/add-account');
             },
           ),
         ],
       ),
       body: Column(
         children: [
-          // Contenu de la page
+          AccountsList(),
         ],
       ),
       floatingActionButton: const FloatingAdd(),

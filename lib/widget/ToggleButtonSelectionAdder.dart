@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ToggleButtonSelectionAdder extends StatefulWidget {
   final Function(int) onSelectionChanged; // Callback pour notifier le changement de sélection
+  final int initialIndex; // Index initial du bouton sélectionné
 
-  ToggleButtonSelectionAdder({required this.onSelectionChanged});
+  ToggleButtonSelectionAdder({required this.onSelectionChanged, this.initialIndex = 0});
 
   @override
   _ToggleButtonSelectionAdderState createState() =>
@@ -12,30 +13,18 @@ class ToggleButtonSelectionAdder extends StatefulWidget {
 
 class _ToggleButtonSelectionAdderState
     extends State<ToggleButtonSelectionAdder> {
-  int _selectedIndex = 0; // L'index du bouton actuellement sélectionné
+  late int _selectedIndex = 0; // L'index du bouton actuellement sélectionné
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ToggleButtons(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Dépense'),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Catégorie'),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Compte'),
-        ),
-      ],
-      isSelected: [
-        _selectedIndex == 0,
-        _selectedIndex == 1,
-        _selectedIndex == 2,
-      ],
+      isSelected: List.generate(3, (index) => index == _selectedIndex),
       onPressed: (index) {
         setState(() {
           _selectedIndex = index;
@@ -46,6 +35,20 @@ class _ToggleButtonSelectionAdderState
       selectedColor: Colors.teal[700],
       fillColor: Colors.teal[300],
       borderRadius: BorderRadius.circular(20),
+      children: const [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Dépense'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Catégorie'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Compte'),
+        ),
+      ],
     );
   }
 }
