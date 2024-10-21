@@ -65,8 +65,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
     });
   }
 
-  DateTime selectedDate = DateTime.now();
-
   // Fonction pour sélectionner une date avec des couleurs personnalisées
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
