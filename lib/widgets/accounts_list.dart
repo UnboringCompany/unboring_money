@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:unboring_money/widgets/account_item.dart';
-import 'package:unboring_money/widgets/category_item.dart';
 
 class AccountsList extends StatefulWidget {
   

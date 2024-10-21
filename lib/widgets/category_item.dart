@@ -61,6 +61,7 @@ class CategoryItem extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(name),
+          backgroundColor: const Color(0xFFF0FDFA),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -82,20 +83,20 @@ class CategoryItem extends StatelessWidget {
                 Navigator.of(context).pop();
                 _editCategory(context, nameController.text, double.parse(limitController.text));
               },
-              child: const Text('Sauvegarder'),
+              child: const Text('Sauvegarder', style: TextStyle(color: Color(0xFF109186))),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteCategory(context);
               },
-              child: const Text('Supprimer'),
+              child: const Text('Supprimer', style: TextStyle(color: Color(0xFF109186))),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Annuler'),
+              child: const Text('Annuler', style: TextStyle(color: Color(0xFF109186))),
             ),
           ],
         );
