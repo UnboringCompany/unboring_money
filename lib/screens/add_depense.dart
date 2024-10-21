@@ -23,8 +23,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final _titreController = TextEditingController();
   final _montantController = TextEditingController();
   int? _selectedCategorieId;
-  int? _selectedCompteId;
-  final String _recurrence = 'ponctuelle'; // Valeur par défaut
+  int? _selectedCompteId;// Valeur par défaut
 
   final _categorieNomController = TextEditingController();
   final _categorieLimiteController = TextEditingController();
@@ -181,8 +180,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                               montant: double.parse(_montantController.text),
                               categorieId: _selectedCategorieId!,
                               date: selectedDate.toIso8601String(),
-                              compteId: _selectedCompteId!,
-                              recurrence: _recurrence);
+                              compteId: _selectedCompteId!);
                           final dbHelper = DatabaseHelper();
                           dbHelper.insertDepense(depense);
                           _titreController.text = "";
