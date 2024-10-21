@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class ToggleButtonSelectionAdder extends StatefulWidget {
   final Function(int) onSelectionChanged; // Callback pour notifier le changement de sélection
+  final int initialIndex; // Index initial du bouton sélectionné
 
-  const ToggleButtonSelectionAdder({super.key, required this.onSelectionChanged});
+  ToggleButtonSelectionAdder({required this.onSelectionChanged, this.initialIndex = 0});
 
   @override
   _ToggleButtonSelectionAdderState createState() =>
@@ -12,16 +13,18 @@ class ToggleButtonSelectionAdder extends StatefulWidget {
 
 class _ToggleButtonSelectionAdderState
     extends State<ToggleButtonSelectionAdder> {
-  int _selectedIndex = 0; // L'index du bouton actuellement sélectionné
+  late int _selectedIndex = 0; // L'index du bouton actuellement sélectionné
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
     return ToggleButtons(
-      isSelected: [
-        _selectedIndex == 0,
-        _selectedIndex == 1,
-        _selectedIndex == 2,
-      ],
+      isSelected: List.generate(3, (index) => index == _selectedIndex),
       onPressed: (index) {
         setState(() {
           _selectedIndex = index;

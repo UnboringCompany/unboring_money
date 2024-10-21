@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:unboring_money/screens/my_accounts.dart';
+import 'package:unboring_money/screens/my_budget.dart';
+import 'package:unboring_money/screens/settings.dart';
+import 'package:unboring_money/screens/stats.dart';
 import 'screens/add_depense.dart';
+import 'package:unboring_money/widgets/floating_add.dart';
+import 'package:unboring_money/widgets/navbar.dart';
+import 'package:unboring_money/widgets/transaction_list.dart';
 
 void main() {
   runApp(const UnboringMoneyApp());
@@ -14,23 +20,47 @@ class UnboringMoneyApp extends StatelessWidget {
     return MaterialApp(
       title: 'UnboringMoney',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primaryColor: const Color(0xFF109186),
+        fontFamily: 'Inter',
       ),
-      home: const HomePage(), // Page principale
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/add-expense': (context) => const AddExpensePage(initialTabIndex: 0),
+        '/add-category': (context) => const AddExpensePage(initialTabIndex: 1),
+        '/add-account': (context) => const AddExpensePage(initialTabIndex: 2),
+        '/stats': (context) => StatsPage(),
+        '/wallet': (context) => MyAccountsPage(),
+        '/budget': (context) => MyBudgetPage(),
+        '/settings': (context) => SettingsPage(),
+      },
     );
   }
 }
 
-// Page principale
 class HomePage extends StatefulWidget {
+
   const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
-}
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  final double budgetRestant = 1850.45;
+
+   final List<Map<String, String>> upcommingTransactions = [
+      {'name': 'EDF', 'date': '15/10/2024', 'amount': '47,65€'},
+      {'name': 'Loyer', 'date': '15/10/2024', 'amount': '47,65€'},
+    ];
+
+  final List<Map<String, String>> transactions = [
+    {'name': 'Carrefour', 'date': '04/10/2024', 'amount': '47,65€'},
+    {'name': 'Auchan', 'date': '03/10/2024', 'amount': '47,65€'},
+    {'name': 'Lideule', 'date': '02/10/2024', 'amount': '47,65€'},
+    {'name': 'Action', 'date': '01/10/2024', 'amount': '47,65€'},
+    {'name': 'H&M', 'date': '01/10/2024', 'amount': '47,65€'},
+    {'name': 'Fnac', 'date': '01/10/2024', 'amount': '47,65€'},
+  ];
 
   // Liste des widgets pour chaque écran de la barre de navigation
   final List<Widget> _pages = [
@@ -54,77 +84,76 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+}
 
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal[50],
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.teal[100],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart_outline),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline), // Bouton Plus
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '',
-          ),
+      extendBody: true,
+      backgroundColor: const Color(0xFFF0FDFA),
+      appBar: AppBar(
+        scrolledUnderElevation: 0.0,
+        title: const Text('UnboringMoney', style: TextStyle(fontWeight: FontWeight.w600)),
+        backgroundColor: const Color(0xFFF0FDFA),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          BudgetSection(budgetRestant: widget.budgetRestant),
+          const SizedBox(height: 20),
+          TransactionList(transactions: widget.transactions, upcomingTransactions: widget.upcommingTransactions),
         ],
       ),
+      floatingActionButton: const FloatingAdd(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: const UnboringNavBar(),
     );
   }
 }
 
-// Écran principal simulé (là où tu as la liste des dépenses)
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+// Section du budget
+class BudgetSection extends StatelessWidget {
+  final double budgetRestant;
+
+  const BudgetSection({super.key, required this.budgetRestant});
+  
+  String get daysLeft {
+    final now = DateTime.now();
+    final endOfMonth = DateTime(now.year, now.month + 1, 0);
+    final daysLeft = endOfMonth.day - now.day;
+    return daysLeft.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.teal[100],
-        title: const Text('UnboringMoney'),
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: const [
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 10, left: 24, right: 10, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            'Reste à dépenser pour les 22 prochains jours',
-            style: TextStyle(fontSize: 16),
+            'Reste à dépenser pour les $daysLeft prochains jours',
+            style: const TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w300),
           ),
           Text(
-            '1850,45€',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+            '${budgetRestant.toStringAsFixed(2)}€',
+            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/budget');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF109186),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
+            child: const Text('Mon budget', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
           ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(child: Text('Dépenses récentes')),
-              Expanded(child: Text('À venir')),
-            ],
-          ),
-          // Exemples de dépenses (remplace par tes données)
-          ListTile(title: Text('Carrefour'), subtitle: Text('47,65€')),
-          ListTile(title: Text('Auchan'), subtitle: Text('47,65€')),
-          ListTile(title: Text('Lideule'), subtitle: Text('47,65€')),
-          // Ajoute d'autres widgets pour l'interface principale
         ],
       ),
     );

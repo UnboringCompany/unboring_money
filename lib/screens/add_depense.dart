@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:unboring_money/database/DatabaseHelper.dart';
 import 'package:unboring_money/models/Categorie.dart';
 import 'package:unboring_money/models/Compte.dart';
@@ -7,14 +8,16 @@ import 'package:unboring_money/models/Depense.dart';
 import '../widget/ToggleButtonSelectionAdder.dart';
 
 class AddExpensePage extends StatefulWidget {
-  const AddExpensePage({super.key});
+  final int initialTabIndex;
+
+  const AddExpensePage({super.key, required this.initialTabIndex});
 
   @override
   _AddExpensePageState createState() => _AddExpensePageState();
 }
 
 class _AddExpensePageState extends State<AddExpensePage> {
-  int _selectedTab = 0; // Pour suivre l'option sélectionnée
+  late int _selectedTab; // Pour suivre l'option sélectionnée
 
   DateTime selectedDate = DateTime.now();
   final _titreController = TextEditingController();
@@ -31,9 +34,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
   List<Categorie> _categories = [];
   List<Compte> _comptes = [];
 
+
   @override
   void initState() {
     super.initState();
+    _selectedTab = widget.initialTabIndex;
     fetchCategories();
     fetchComptes();
     fetchDepenses();
@@ -60,6 +65,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
     });
   }
 
+  DateTime selectedDate = DateTime.now();
+
   // Fonction pour sélectionner une date avec des couleurs personnalisées
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -72,18 +79,15 @@ class _AddExpensePageState extends State<AddExpensePage> {
           data: ThemeData.light().copyWith(
             primaryColor: Colors.teal[700], // Couleur principale
             colorScheme: ColorScheme.light(
-              primary: Colors.teal
-                  .shade700, // Couleur du bouton OK et de la date sélectionnée
-              onPrimary: Colors.white, // Couleur du texte sur le bouton OK
-              onSurface: Colors
-                  .teal.shade900, // Couleur du texte (jours, mois, années)
+              primary: Colors.teal.shade700, // Couleur du bouton OK et de la date sélectionnée
+              onPrimary: Colors.white,       // Couleur du texte sur le bouton OK
+              onSurface: Colors.teal.shade900, // Couleur du texte (jours, mois, années)
+
             ),
-            buttonTheme: const ButtonThemeData(
-              textTheme:
-                  ButtonTextTheme.primary, // Couleur du texte sur les boutons
+            buttonTheme: ButtonThemeData(
+              textTheme: ButtonTextTheme.primary, // Couleur du texte sur les boutons
             ),
-            dialogBackgroundColor:
-                Colors.teal[50], // Couleur de fond de la boîte de dialogue
+            dialogBackgroundColor: Colors.teal[50], // Couleur de fond de la boîte de dialogue
           ),
           child: child!,
         );
@@ -135,7 +139,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
-                    child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+                    child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged, initialIndex: _selectedTab),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -447,6 +451,7 @@ class AccountForm extends StatelessWidget {
 
   const AccountForm({super.key, required this.compteNomController});
 
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -475,8 +480,9 @@ class AccountForm extends StatelessWidget {
 // Champ de texte personnalisé
 class ExpenseTextField extends StatelessWidget {
   final String label;
-
+  
   const ExpenseTextField({super.key, required this.label});
+
 
   @override
   Widget build(BuildContext context) {
@@ -487,6 +493,7 @@ class ExpenseTextField extends StatelessWidget {
         fillColor: Colors.teal[100],
         contentPadding:
             const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
