@@ -30,10 +30,10 @@ class DatabaseHelper {
       onCreate: (db, version) async {
         // Create tables here
         await db.execute('''
-          CREATE TABLE Depense (
+          CREATE TABLE Depenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titre TEXT,
-            type TEXT,
+            categorieId INTEGER,
             montant REAL,
             date TEXT,
             compteId INTEGER,
@@ -42,14 +42,15 @@ class DatabaseHelper {
         ''');
 
         await db.execute('''
-          CREATE TABLE Categorie (
+          CREATE TABLE Categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nom TEXT
+            nom TEXT,
+            limite INTEGER
           )
         ''');
 
         await db.execute('''
-          CREATE TABLE Compte (
+          CREATE TABLE Comptes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nom TEXT
           )
@@ -58,30 +59,17 @@ class DatabaseHelper {
     );
   }
 
-  // Insert into Depense table
-  //Future<int> insertDepense(Map<String, dynamic> row) async {
-    //final db = await database;
-    //return await db.insert('Depense', row);
-  //}
-
   Future<void> insertDepense(Depense depense) async {
     final db = await database; // Obtention d’une référence sur la BD
     // Insertion dans la table Users
     await db.insert(
-      ' Categories',
+      ' Depenses',
       depense.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
       // `conflictAlgorithm` permet de détecter que le tuple inséré existe déjà
       // Ici, on spécifie qu’en pareil cas on remplace la donnée qui existait déjà
     );
-    print("new categorie");
   }
-
-  // Insert into Categorie table
-  //Future<int> insertCategorie(Map<String, dynamic> row) async {
-    //final db = await database;
-    //return await db.insert('Categorie', row);
-  //}
 
   Future<void> insertCategorie(Categorie categorie) async {
     final db = await database; // Obtention d’une référence sur la BD
@@ -93,14 +81,7 @@ class DatabaseHelper {
       // `conflictAlgorithm` permet de détecter que le tuple inséré existe déjà
       // Ici, on spécifie qu’en pareil cas on remplace la donnée qui existait déjà
     );
-    print("new categorie");
   }
-
-  // Insert into Compte table
-  //Future<int> insertCompte(Map<String, dynamic> row) async {
-  //final db = await database;
-  //return await db.insert('Compte', row);
-  //}
 
   Future<void> insertCompte(Compte compte) async {
     final db = await database; // Obtention d’une référence sur la BD
@@ -112,28 +93,47 @@ class DatabaseHelper {
       // `conflictAlgorithm` permet de détecter que le tuple inséré existe déjà
       // Ici, on spécifie qu’en pareil cas on remplace la donnée qui existait déjà
     );
-    print("new account");
   }
 
   Future<List<Categorie>> getCategories() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('Categorie');
+    final List<Map<String, dynamic>> maps = await db.query('Categories');
     return List.generate(maps.length, (i) {
       return Categorie(
         id: maps[i]['id'],
         nom: maps[i]['nom'],
-        description: '',
+        limite: maps[i]['limite'],
       );
     });
   }
 
   Future<List<Compte>> getComptes() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('Categorie');
+    final List<Map<String, dynamic>> maps = await db.query('Comptes');
+
     return List.generate(maps.length, (i) {
       return Compte(
         id: maps[i]['id'],
         nom: maps[i]['nom'],
+      );
+    });
+  }
+
+  Future<List<Depense>> getDepenses() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('Depenses');
+
+    print(maps);
+
+    return List.generate(maps.length, (i) {
+      return Depense(
+        id: maps[i]['id'],
+        titre: maps[i]['titre'],
+        montant: maps[i]['montant'],
+        date: maps[i]['date'],
+        compteId: maps[i]['compteId'],
+        categorieId: maps[i]['categorieId'],
+        recurrence: maps[i]['recurrence'],
       );
     });
   }

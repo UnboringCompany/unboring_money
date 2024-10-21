@@ -1,16 +1,16 @@
 class Depense {
   final int? id;
   final String titre;
-  final String type;
+  final int categorieId;
   final double montant;
-  final DateTime date;
+  final String date;
   final int compteId;
   final String recurrence;
 
   Depense({
     this.id,
     required this.titre,
-    required this.type,
+    required this.categorieId,
     required this.montant,
     required this.date,
     required this.compteId,
@@ -20,8 +20,9 @@ class Depense {
   // Convert a Depense into a Map.
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'titre': titre,
-      'type': type,
+      'categorieId': categorieId,
       'montant': montant,
       'date': date,
       'compteId': compteId,

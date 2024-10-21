@@ -24,7 +24,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final String _recurrence = 'ponctuelle'; // Valeur par défaut
 
   final _categorieNomController = TextEditingController();
-  final _categorieDescriptionController = TextEditingController();
+  final _categorieLimiteController = TextEditingController();
 
   final _compteNomController = TextEditingController();
 
@@ -36,18 +36,28 @@ class _AddExpensePageState extends State<AddExpensePage> {
     super.initState();
     fetchCategories();
     fetchComptes();
+    fetchDepenses();
   }
 
+  Future<void> fetchDepenses() async {
+    final dbHelper = DatabaseHelper();
+    await dbHelper.getDepenses();
+  }
+  
   Future<void> fetchCategories() async {
     final dbHelper = DatabaseHelper();
     _categories = await dbHelper.getCategories();
-    setState(() {});
+    setState(() {
+      _categories = _categories;
+    });
   }
 
   Future<void> fetchComptes() async {
     final dbHelper = DatabaseHelper();
     _comptes = await dbHelper.getComptes();
-    setState(() {});
+    setState(() {
+      _comptes = _comptes;
+    });
   }
 
   // Fonction pour sélectionner une date avec des couleurs personnalisées
@@ -90,6 +100,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
   void _onSelectionChanged(int index) {
     setState(() {
       _selectedTab = index;
+      fetchCategories();
+      fetchComptes();
     });
   }
 
@@ -102,98 +114,115 @@ class _AddExpensePageState extends State<AddExpensePage> {
         title: const Text('UnboringMoney'),
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                'Ajout d\'un${_selectedTab == 0 ? 'e dépense' : _selectedTab == 1 ? 'e catégorie' : ' compte'}',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Utilisation du widget ToggleButtonSelectionAdder
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 16.0), // Marge verticale autour du toggle
-              child: Center(
-                child: ToggleButtonSelectionAdder(
-                    onSelectionChanged: _onSelectionChanged),
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (_selectedTab == 0)
-              ExpenseForm(
-                selectDate: _selectDate,
-                selectedDate: selectedDate,
-                categories: _categories,
-                comptes: _comptes,
-                selectedCategorieId: _selectedCategorieId,
-                selectedCompteId: _selectedCompteId,
-                onCategorieChanged: (int? newValue) {
-                  setState(() {
-                    _selectedCategorieId = newValue;
-                  });
-                },
-                onCompteChanged: (int? newValue) {
-                  setState(() {
-                    _selectedCompteId = newValue;
-                  });
-                },
-              ),
-            if (_selectedTab == 1) const CategoryForm(),
-            if (_selectedTab == 2) const AccountForm(),
-            const Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  if(_selectedTab == 0){
-                    final depense = Depense(titre: _titreController.text, montant: double.parse(_montantController.text), type: _categorieNomController.text, date: selectedDate, compteId: _selectedCompteId!, recurrence: _recurrence);
-                    final dbHelper = DatabaseHelper();
-                    dbHelper.insertDepense(depense);
-                    _titreController.text = "";
-                    _montantController.text = "";
-                    _selectedCategorieId = null;
-                    _selectedCompteId = null;
-                  }
-
-                  if (_selectedTab == 1) {
-                    final categorie = Categorie(nom: _categorieNomController.text, description: _categorieDescriptionController.text);
-                    final dbHelper = DatabaseHelper();
-                    dbHelper.insertCategorie(categorie);
-                    _categorieNomController.text = "";
-                    _categorieDescriptionController.text = "";
-                  }
-
-                  if (_selectedTab == 2) {
-                    final compte = Compte(nom: _compteNomController.text);
-                    final dbHelper = DatabaseHelper();
-                    dbHelper.insertCompte(compte);
-                    _compteNomController.text = "";
-                  }
-                  // Action à effectuer lorsque l'utilisateur valide
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal[700],
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Ajout d\'un${_selectedTab == 0 ? 'e dépense' : _selectedTab == 1 ? 'e catégorie' : ' compte'}',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Valider ${_selectedTab == 0 ? 'la dépense' : _selectedTab == 1 ? 'la catégorie' : 'le compte'}',
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                const SizedBox(height: 16),
+                // Utilisation du widget ToggleButtonSelectionAdder
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Center(
+                    child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                if (_selectedTab == 0)
+                  ExpenseForm(
+                    selectDate: _selectDate,
+                    selectedDate: selectedDate,
+                    categories: _categories,
+                    comptes: _comptes,
+                    selectedCategorieId: _selectedCategorieId,
+                    selectedCompteId: _selectedCompteId,
+                    onCategorieChanged: (int? newValue) {
+                      setState(() {
+                        _selectedCategorieId = newValue;
+                      });
+                    },
+                    onCompteChanged: (int? newValue) {
+                      setState(() {
+                        _selectedCompteId = newValue;
+                      });
+                    },
+                    titreController: _titreController,  // Ajout du controller pour le titre
+                    montantController: _montantController,  // Ajout du controller pour le montant
+                  ),
+                if (_selectedTab == 1) 
+                    CategoryForm(
+                    categorieNomController: _categorieNomController,
+                    categorieLimiteController: _categorieLimiteController,
+                  ),
+                if (_selectedTab == 2)
+                  AccountForm(
+                    compteNomController: _compteNomController,
+                  ),
+                const SizedBox(height: 16),
+                Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (_selectedTab == 0) {
+                          final depense = Depense(
+                              titre: _titreController.text,
+                              montant: double.parse(_montantController.text),
+                              categorieId: _selectedCategorieId!,
+                              date: selectedDate.toIso8601String(),
+                              compteId: _selectedCompteId!,
+                              recurrence: _recurrence);
+                          final dbHelper = DatabaseHelper();
+                          dbHelper.insertDepense(depense);
+                          _titreController.text = "";
+                          _montantController.text = "";
+                          _selectedCategorieId = null;
+                          _selectedCompteId = null;
+                        }
+
+                        if (_selectedTab == 1) {
+                          final categorie = Categorie(
+                              nom: _categorieNomController.text,
+                              limite: int.parse(_categorieLimiteController.text));
+                          final dbHelper = DatabaseHelper();
+                          dbHelper.insertCategorie(categorie);
+                          _categorieNomController.text = "";
+                          _categorieLimiteController.text = "";
+                        }
+
+                        if (_selectedTab == 2) {
+                          final compte = Compte(nom: _compteNomController.text);
+                          final dbHelper = DatabaseHelper();
+                          dbHelper.insertCompte(compte);
+                          _compteNomController.text = "";
+                        }
+                      },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal[700],
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      'Valider ${_selectedTab == 0 ? 'la dépense' : _selectedTab == 1 ? 'la catégorie' : 'le compte'}',
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 16),
-          ],
+          ),
         ),
       ),
     );
@@ -210,8 +239,11 @@ class ExpenseForm extends StatelessWidget {
   final int? selectedCompteId;
   final Function(int?) onCategorieChanged;
   final Function(int?) onCompteChanged;
+  final TextEditingController titreController;  // Ajout du controller pour le titre
+  final TextEditingController montantController; // Ajout du controller pour le montant
 
-  const ExpenseForm({super.key, 
+  const ExpenseForm({
+    super.key,
     required this.selectDate,
     required this.selectedDate,
     required this.categories,
@@ -220,6 +252,8 @@ class ExpenseForm extends StatelessWidget {
     this.selectedCompteId,
     required this.onCategorieChanged,
     required this.onCompteChanged,
+    required this.titreController,  // Recevoir le controller pour le titre
+    required this.montantController, // Recevoir le controller pour le montant
   });
 
   @override
@@ -227,8 +261,23 @@ class ExpenseForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const ExpenseTextField(label: 'Titre de la dépense'),
+        // Utilisation du controller pour le titre de la dépense
+        TextField(
+          controller: titreController,
+          decoration: InputDecoration(
+            labelText: 'Titre de la dépense',
+            filled: true,
+            fillColor: Colors.teal[100],
+            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
         const SizedBox(height: 16),
+        
+        // Dropdown pour sélectionner une catégorie
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
           decoration: BoxDecoration(
@@ -245,41 +294,54 @@ class ExpenseForm extends StatelessWidget {
                 child: Text(categorie.nom),
               );
             }).toList(),
-            underline: Container(), // Remove the underline
-            isExpanded: true, // Expand the dropdown to fill the container
+            underline: Container(),
+            isExpanded: true,
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            const Expanded(child: ExpenseTextField(label: 'Montant')),
-            const SizedBox(width: 16),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => selectDate(context),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.teal[100],
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Date',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Icon(Icons.calendar_today),
-                    ],
-                  ),
-                ),
-              ),
+        
+        // Champ pour le montant avec controller
+        TextField(
+          controller: montantController,
+          keyboardType: TextInputType.number, // Pour forcer une entrée numérique
+          decoration: InputDecoration(
+            labelText: 'Montant',
+            filled: true,
+            fillColor: Colors.teal[100],
+            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
             ),
-          ],
+          ),
         ),
         const SizedBox(height: 16),
+        
+        // Sélection de la date
+        GestureDetector(
+          onTap: () => selectDate(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.teal[100],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  //'${selectedDate.toLocal().day}/${selectedDate.toLocal().month}/${selectedDate.toLocal().year}',
+                  '${selectedDate.toLocal().day.toString().padLeft(2, '0')}/${selectedDate.toLocal().month.toString().padLeft(2, '0')}/${selectedDate.toLocal().year}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const Icon(Icons.calendar_today),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Dropdown pour sélectionner un compte
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
           decoration: BoxDecoration(
@@ -296,27 +358,26 @@ class ExpenseForm extends StatelessWidget {
                 child: Text(compte.nom),
               );
             }).toList(),
-            underline: Container(), // Remove the underline
-            isExpanded: true, // Expand the dropdown to fill the container
+            underline: Container(),
+            isExpanded: true,
           ),
         ),
         const SizedBox(height: 16),
+
+        // Sélection du type de dépense
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.teal[100],
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
           ),
           items: const [
-            DropdownMenuItem(
-                value: 'ponctuelle', child: Text('Dépense ponctuelle')),
-            DropdownMenuItem(
-                value: 'recurrente', child: Text('Dépense récurrente')),
+            DropdownMenuItem(value: 'ponctuelle', child: Text('Dépense ponctuelle')),
+            DropdownMenuItem(value: 'recurrente', child: Text('Dépense récurrente')),
           ],
           onChanged: (value) {
             // Gérer le changement de valeur
@@ -328,18 +389,53 @@ class ExpenseForm extends StatelessWidget {
   }
 }
 
+
 // Formulaire pour l'ajout de catégorie (à personnaliser)
 class CategoryForm extends StatelessWidget {
-  const CategoryForm({super.key});
+  final TextEditingController categorieNomController;
+  final TextEditingController categorieLimiteController;
+
+  const CategoryForm({
+    super.key,
+    required this.categorieNomController,
+    required this.categorieLimiteController,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExpenseTextField(label: 'Nom de la catégorie'),
-        SizedBox(height: 16),
-        ExpenseTextField(label: 'Description'),
+        TextField(
+          controller: categorieNomController,
+          decoration: InputDecoration(
+            labelText: 'Nom de la catégorie',
+            filled: true,
+            fillColor: Colors.teal[100],
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: categorieLimiteController,
+          decoration: InputDecoration(
+            labelText: 'Limite de dépense',
+            filled: true,
+            fillColor: Colors.teal[100],
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -347,15 +443,30 @@ class CategoryForm extends StatelessWidget {
 
 // Formulaire pour l'ajout de compte (à personnaliser)
 class AccountForm extends StatelessWidget {
-  const AccountForm({super.key});
+  final TextEditingController compteNomController;
+
+  const AccountForm({super.key, required this.compteNomController});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExpenseTextField(label: 'Nom du compte'),
-        SizedBox(height: 16),
+        TextField(
+          controller: compteNomController,
+          decoration: InputDecoration(
+            labelText: 'Nom du compte',
+            filled: true,
+            fillColor: Colors.teal[100],
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
       ],
     );
   }
