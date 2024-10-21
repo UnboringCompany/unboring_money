@@ -133,7 +133,6 @@ class DatabaseHelper {
         date: maps[i]['date'],
         compteId: maps[i]['compteId'],
         categorieId: maps[i]['categorieId'],
-        recurrence: maps[i]['recurrence'],
       );
     });
   }

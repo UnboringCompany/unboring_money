@@ -24,7 +24,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final _montantController = TextEditingController();
   int? _selectedCategorieId;
   int? _selectedCompteId;
-  final String _recurrence = 'ponctuelle'; // Valeur par défaut
 
   final _categorieNomController = TextEditingController();
   final _categorieLimiteController = TextEditingController();
@@ -181,8 +180,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                               montant: double.parse(_montantController.text),
                               categorieId: _selectedCategorieId!,
                               date: selectedDate.toIso8601String(),
-                              compteId: _selectedCompteId!,
-                              recurrence: _recurrence);
+                              compteId: _selectedCompteId!);
                           final dbHelper = DatabaseHelper();
                           dbHelper.insertDepense(depense);
                           _titreController.text = "";
@@ -365,27 +363,6 @@ class ExpenseForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-
-        // Sélection du type de dépense
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.teal[100],
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
-            ),
-          ),
-          items: const [
-            DropdownMenuItem(value: 'ponctuelle', child: Text('Dépense ponctuelle')),
-            DropdownMenuItem(value: 'recurrente', child: Text('Dépense récurrente')),
-          ],
-          onChanged: (value) {
-            // Gérer le changement de valeur
-          },
-          hint: const Text('Dépense ponctuelle'),
-        ),
       ],
     );
   }
