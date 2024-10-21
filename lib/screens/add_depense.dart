@@ -3,12 +3,24 @@ import 'package:flutter/material.dart';
 import '../widget/ToggleButtonSelectionAdder.dart';
 
 class AddExpensePage extends StatefulWidget {
+
+  final int initialTabIndex;
+
+  const AddExpensePage({super.key, required this.initialTabIndex});
+
   @override
   _AddExpensePageState createState() => _AddExpensePageState();
+
 }
 
 class _AddExpensePageState extends State<AddExpensePage> {
-  int _selectedTab = 0; // Pour suivre l'option sélectionnée
+  late int _selectedTab; // Pour suivre l'option sélectionnée
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedTab = widget.initialTabIndex;
+  }
 
   DateTime selectedDate = DateTime.now();
 
@@ -81,7 +93,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               padding: const EdgeInsets.symmetric(vertical: 16.0), // Marge verticale autour du toggle
               child: 
               Center(
-                child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+                child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged, initialIndex: _selectedTab,),
               ),
 
             ),

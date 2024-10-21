@@ -8,8 +8,8 @@ class FloatingAdd extends StatelessWidget{
   Widget build(BuildContext context) {
     return FloatingActionButton(
         onPressed: () {
-          if (ModalRoute.of(context)?.settings.name != '/add') {
-            Navigator.pushNamed(context, '/add');
+          if (ModalRoute.of(context)?.settings.name != '/add-expense') {
+            Navigator.pushNamed(context, '/add-expense');
           }
         },
         shape: const CircleBorder(),

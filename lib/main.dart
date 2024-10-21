@@ -27,7 +27,9 @@ class UnboringMoneyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        '/add': (context) => AddExpensePage(),
+        '/add-expense': (context) => const AddExpensePage(initialTabIndex: 0),
+        '/add-category': (context) => const AddExpensePage(initialTabIndex: 1),
+        '/add-account': (context) => const AddExpensePage(initialTabIndex: 2),
         '/stats': (context) => StatsPage(),
         '/wallet': (context) => MyAccountsPage(),
         '/budget': (context) => MyBudgetPage(),

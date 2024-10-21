@@ -26,7 +26,7 @@ class _MyBudgetPageState extends State<MyBudgetPage> {
             icon: const Icon(Icons.add),
             onPressed: () {
               //Pop up to add a new budget
-              print("Add a new budget");
+              Navigator.of(context).pushNamed('/add-category');
             },
           ),
         ],
