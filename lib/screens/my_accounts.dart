@@ -26,7 +26,7 @@ class _MyAccountsPageState extends State<MyAccountsPage> {
             icon: const Icon(Icons.add),
             onPressed: () {
               //Pop up to add a new account
-              Navigator.of(context).pushNamed('/add-account');
+              Navigator.of(context).pushReplacementNamed('/add-account');
             },
           ),
         ],
