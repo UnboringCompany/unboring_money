@@ -363,27 +363,6 @@ class ExpenseForm extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-
-        // Sélection du type de dépense
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.teal[100],
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
-            ),
-          ),
-          items: const [
-            DropdownMenuItem(value: 'ponctuelle', child: Text('Dépense ponctuelle')),
-            DropdownMenuItem(value: 'recurrente', child: Text('Dépense récurrente')),
-          ],
-          onChanged: (value) {
-            // Gérer le changement de valeur
-          },
-          hint: const Text('Dépense ponctuelle'),
-        ),
       ],
     );
   }
