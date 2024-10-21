@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:unboring_money/database/DatabaseHelper.dart';
+import 'package:unboring_money/models/Categorie.dart';
+import 'package:unboring_money/models/Compte.dart';
+import 'package:unboring_money/models/Depense.dart';
 
 import '../widget/ToggleButtonSelectionAdder.dart';
 
 class AddExpensePage extends StatefulWidget {
+  const AddExpensePage({super.key});
+
   @override
   _AddExpensePageState createState() => _AddExpensePageState();
 }
@@ -11,6 +17,38 @@ class _AddExpensePageState extends State<AddExpensePage> {
   int _selectedTab = 0; // Pour suivre l'option sélectionnée
 
   DateTime selectedDate = DateTime.now();
+  final _titreController = TextEditingController();
+  final _montantController = TextEditingController();
+  int? _selectedCategorieId;
+  int? _selectedCompteId;
+  final String _recurrence = 'ponctuelle'; // Valeur par défaut
+
+  final _categorieNomController = TextEditingController();
+  final _categorieDescriptionController = TextEditingController();
+
+  final _compteNomController = TextEditingController();
+
+  List<Categorie> _categories = [];
+  List<Compte> _comptes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+    fetchComptes();
+  }
+
+  Future<void> fetchCategories() async {
+    final dbHelper = DatabaseHelper();
+    _categories = await dbHelper.getCategories();
+    setState(() {});
+  }
+
+  Future<void> fetchComptes() async {
+    final dbHelper = DatabaseHelper();
+    _comptes = await dbHelper.getComptes();
+    setState(() {});
+  }
 
   // Fonction pour sélectionner une date avec des couleurs personnalisées
   Future<void> _selectDate(BuildContext context) async {
@@ -24,15 +62,18 @@ class _AddExpensePageState extends State<AddExpensePage> {
           data: ThemeData.light().copyWith(
             primaryColor: Colors.teal[700], // Couleur principale
             colorScheme: ColorScheme.light(
-              primary: Colors.teal.shade700, // Couleur du bouton OK et de la date sélectionnée
-              onPrimary: Colors.white,       // Couleur du texte sur le bouton OK
-              onSurface: Colors.teal.shade900, // Couleur du texte (jours, mois, années)
-
+              primary: Colors.teal
+                  .shade700, // Couleur du bouton OK et de la date sélectionnée
+              onPrimary: Colors.white, // Couleur du texte sur le bouton OK
+              onSurface: Colors
+                  .teal.shade900, // Couleur du texte (jours, mois, années)
             ),
-            buttonTheme: ButtonThemeData(
-              textTheme: ButtonTextTheme.primary, // Couleur du texte sur les boutons
+            buttonTheme: const ButtonThemeData(
+              textTheme:
+                  ButtonTextTheme.primary, // Couleur du texte sur les boutons
             ),
-            dialogBackgroundColor: Colors.teal[50], // Couleur de fond de la boîte de dialogue
+            dialogBackgroundColor:
+                Colors.teal[50], // Couleur de fond de la boîte de dialogue
           ),
           child: child!,
         );
@@ -58,7 +99,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
       backgroundColor: Colors.teal[50],
       appBar: AppBar(
         backgroundColor: Colors.teal[100],
-        title: Text('UnboringMoney'),
+        title: const Text('UnboringMoney'),
         elevation: 0,
       ),
       body: Padding(
@@ -66,51 +107,92 @@ class _AddExpensePageState extends State<AddExpensePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(child:
-            Text(
-              'Ajout d\'un${_selectedTab == 0 ? 'e dépense' : _selectedTab == 1 ? 'e catégorie' : ' compte'}',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            Center(
+              child: Text(
+                'Ajout d\'un${_selectedTab == 0 ? 'e dépense' : _selectedTab == 1 ? 'e catégorie' : ' compte'}',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),)
-            ,
-            SizedBox(height: 16),
+            ),
+            const SizedBox(height: 16),
             // Utilisation du widget ToggleButtonSelectionAdder
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0), // Marge verticale autour du toggle
-              child: 
-              Center(
-                child: ToggleButtonSelectionAdder(onSelectionChanged: _onSelectionChanged),
+              padding: const EdgeInsets.symmetric(
+                  vertical: 16.0), // Marge verticale autour du toggle
+              child: Center(
+                child: ToggleButtonSelectionAdder(
+                    onSelectionChanged: _onSelectionChanged),
               ),
-
             ),
-            SizedBox(height: 16),
-            if (_selectedTab == 0) ExpenseForm(selectDate: _selectDate, selectedDate: selectedDate),
-            if (_selectedTab == 1) CategoryForm(),
-            if (_selectedTab == 2) AccountForm(),
-            Spacer(),
+            const SizedBox(height: 16),
+            if (_selectedTab == 0)
+              ExpenseForm(
+                selectDate: _selectDate,
+                selectedDate: selectedDate,
+                categories: _categories,
+                comptes: _comptes,
+                selectedCategorieId: _selectedCategorieId,
+                selectedCompteId: _selectedCompteId,
+                onCategorieChanged: (int? newValue) {
+                  setState(() {
+                    _selectedCategorieId = newValue;
+                  });
+                },
+                onCompteChanged: (int? newValue) {
+                  setState(() {
+                    _selectedCompteId = newValue;
+                  });
+                },
+              ),
+            if (_selectedTab == 1) const CategoryForm(),
+            if (_selectedTab == 2) const AccountForm(),
+            const Spacer(),
             Center(
               child: ElevatedButton(
                 onPressed: () {
+                  if(_selectedTab == 0){
+                    final depense = Depense(titre: _titreController.text, montant: double.parse(_montantController.text), type: _categorieNomController.text, date: selectedDate, compteId: _selectedCompteId!, recurrence: _recurrence);
+                    final dbHelper = DatabaseHelper();
+                    dbHelper.insertDepense(depense);
+                    _titreController.text = "";
+                    _montantController.text = "";
+                    _selectedCategorieId = null;
+                    _selectedCompteId = null;
+                  }
+
+                  if (_selectedTab == 1) {
+                    final categorie = Categorie(nom: _categorieNomController.text, description: _categorieDescriptionController.text);
+                    final dbHelper = DatabaseHelper();
+                    dbHelper.insertCategorie(categorie);
+                    _categorieNomController.text = "";
+                    _categorieDescriptionController.text = "";
+                  }
+
+                  if (_selectedTab == 2) {
+                    final compte = Compte(nom: _compteNomController.text);
+                    final dbHelper = DatabaseHelper();
+                    dbHelper.insertCompte(compte);
+                    _compteNomController.text = "";
+                  }
                   // Action à effectuer lorsque l'utilisateur valide
                 },
-                child: Text(
-                  'Valider ${_selectedTab == 0 ? 'la dépense' : _selectedTab == 1 ? 'la catégorie' : 'le compte'}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white),
-                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal[700],
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+                child: Text(
+                  'Valider ${_selectedTab == 0 ? 'la dépense' : _selectedTab == 1 ? 'la catégorie' : 'le compte'}',
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -122,32 +204,67 @@ class _AddExpensePageState extends State<AddExpensePage> {
 class ExpenseForm extends StatelessWidget {
   final Function(BuildContext) selectDate;
   final DateTime selectedDate;
+  final List<Categorie> categories;
+  final List<Compte> comptes;
+  final int? selectedCategorieId;
+  final int? selectedCompteId;
+  final Function(int?) onCategorieChanged;
+  final Function(int?) onCompteChanged;
 
-  ExpenseForm({required this.selectDate, required this.selectedDate});
+  const ExpenseForm({super.key, 
+    required this.selectDate,
+    required this.selectedDate,
+    required this.categories,
+    required this.comptes,
+    this.selectedCategorieId,
+    this.selectedCompteId,
+    required this.onCategorieChanged,
+    required this.onCompteChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExpenseTextField(label: 'Titre de la dépense'),
-        SizedBox(height: 16),
-        ExpenseTextField(label: 'Type de dépense'),
-        SizedBox(height: 16),
+        const ExpenseTextField(label: 'Titre de la dépense'),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.teal[100],
+          ),
+          child: DropdownButton<int>(
+            hint: const Text("Sélectionner une categorie"),
+            value: selectedCategorieId,
+            onChanged: onCategorieChanged,
+            items: categories.map<DropdownMenuItem<int>>((Categorie categorie) {
+              return DropdownMenuItem<int>(
+                value: categorie.id,
+                child: Text(categorie.nom),
+              );
+            }).toList(),
+            underline: Container(), // Remove the underline
+            isExpanded: true, // Expand the dropdown to fill the container
+          ),
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: ExpenseTextField(label: 'Montant')),
-            SizedBox(width: 16),
+            const Expanded(child: ExpenseTextField(label: 'Montant')),
+            const SizedBox(width: 16),
             Expanded(
               child: GestureDetector(
                 onTap: () => selectDate(context),
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.teal[100],
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -162,27 +279,49 @@ class ExpenseForm extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(height: 16),
-        ExpenseTextField(label: 'Compte associé'),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.teal[100],
+          ),
+          child: DropdownButton<int>(
+            hint: const Text("Sélectionner un compte"),
+            value: selectedCompteId,
+            onChanged: onCompteChanged,
+            items: comptes.map<DropdownMenuItem<int>>((Compte compte) {
+              return DropdownMenuItem<int>(
+                value: compte.id,
+                child: Text(compte.nom),
+              );
+            }).toList(),
+            underline: Container(), // Remove the underline
+            isExpanded: true, // Expand the dropdown to fill the container
+          ),
+        ),
+        const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.teal[100],
-            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
           ),
-          items: [
-            DropdownMenuItem(child: Text('Dépense ponctuelle'), value: 'ponctuelle'),
-            DropdownMenuItem(child: Text('Dépense récurrente'), value: 'recurrente'),
+          items: const [
+            DropdownMenuItem(
+                value: 'ponctuelle', child: Text('Dépense ponctuelle')),
+            DropdownMenuItem(
+                value: 'recurrente', child: Text('Dépense récurrente')),
           ],
           onChanged: (value) {
             // Gérer le changement de valeur
           },
-          hint: Text('Dépense ponctuelle'),
+          hint: const Text('Dépense ponctuelle'),
         ),
       ],
     );
@@ -191,9 +330,11 @@ class ExpenseForm extends StatelessWidget {
 
 // Formulaire pour l'ajout de catégorie (à personnaliser)
 class CategoryForm extends StatelessWidget {
+  const CategoryForm({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ExpenseTextField(label: 'Nom de la catégorie'),
@@ -206,9 +347,11 @@ class CategoryForm extends StatelessWidget {
 
 // Formulaire pour l'ajout de compte (à personnaliser)
 class AccountForm extends StatelessWidget {
+  const AccountForm({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ExpenseTextField(label: 'Nom du compte'),
@@ -222,7 +365,7 @@ class AccountForm extends StatelessWidget {
 class ExpenseTextField extends StatelessWidget {
   final String label;
 
-  ExpenseTextField({required this.label});
+  const ExpenseTextField({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +374,8 @@ class ExpenseTextField extends StatelessWidget {
         labelText: label,
         filled: true,
         fillColor: Colors.teal[100],
-        contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,

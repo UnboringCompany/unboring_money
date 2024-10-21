@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ToggleButtonSelectionAdder extends StatefulWidget {
   final Function(int) onSelectionChanged; // Callback pour notifier le changement de sélection
 
-  ToggleButtonSelectionAdder({required this.onSelectionChanged});
+  const ToggleButtonSelectionAdder({super.key, required this.onSelectionChanged});
 
   @override
   _ToggleButtonSelectionAdderState createState() =>
@@ -17,20 +17,6 @@ class _ToggleButtonSelectionAdderState
   @override
   Widget build(BuildContext context) {
     return ToggleButtons(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Dépense'),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Catégorie'),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text('Compte'),
-        ),
-      ],
       isSelected: [
         _selectedIndex == 0,
         _selectedIndex == 1,
@@ -46,6 +32,20 @@ class _ToggleButtonSelectionAdderState
       selectedColor: Colors.teal[700],
       fillColor: Colors.teal[300],
       borderRadius: BorderRadius.circular(20),
+      children: const [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Dépense'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Catégorie'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text('Compte'),
+        ),
+      ],
     );
   }
 }

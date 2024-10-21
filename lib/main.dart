@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'screens/add_depense.dart';
 
 void main() {
-  runApp(UnboringMoneyApp());
+  runApp(const UnboringMoneyApp());
 }
 
 class UnboringMoneyApp extends StatelessWidget {
+  const UnboringMoneyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,13 +16,15 @@ class UnboringMoneyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: HomePage(), // Page principale
+      home: const HomePage(), // Page principale
     );
   }
 }
 
 // Page principale
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -30,10 +34,10 @@ class _HomePageState extends State<HomePage> {
 
   // Liste des widgets pour chaque écran de la barre de navigation
   final List<Widget> _pages = [
-    MainScreen(),  // Ecran principal
-    Center(child: Text('Statistiques')), // Placeholder pour la section "Statistiques"
-    Center(child: Text('Compte')),       // Placeholder pour une autre section
-    Center(child: Text('Paramètres')),   // Placeholder pour les paramètres
+    const MainScreen(),  // Ecran principal
+    const Center(child: Text('Statistiques')), // Placeholder pour la section "Statistiques"
+    const Center(child: Text('Compte')),       // Placeholder pour une autre section
+    const Center(child: Text('Paramètres')),   // Placeholder pour les paramètres
   ];
 
   void _onItemTapped(int index) {
@@ -41,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       // Lorsqu'on clique sur le bouton Plus, on navigue vers la page d'ajout d'une dépense
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddExpensePage()),
+        MaterialPageRoute(builder: (context) => const AddExpensePage()),
       );
     } else {
       // Sinon, on change simplement l'index de la page
@@ -60,7 +64,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.teal[100],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '',
@@ -85,17 +89,19 @@ class _HomePageState extends State<HomePage> {
 
 // Écran principal simulé (là où tu as la liste des dépenses)
 class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal[100],
-        title: Text('UnboringMoney'),
+        title: const Text('UnboringMoney'),
         elevation: 0,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
-        children: [
+        children: const [
           Text(
             'Reste à dépenser pour les 22 prochains jours',
             style: TextStyle(fontSize: 16),
