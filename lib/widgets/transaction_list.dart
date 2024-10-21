@@ -58,9 +58,9 @@ class _TransactionListState extends State<TransactionList> {
                 itemCount: currentTransactions.length,
                 itemBuilder: (context, index) {
                   return TransactionItem(
-                    name: currentTransactions[index]['name']!,
-                    date: currentTransactions[index]['date']!,
-                    amount: currentTransactions[index]['amount']!,
+                    name: currentTransactions[index].titre!,
+                    date: currentTransactions[index].date!,
+                    amount: currentTransactions[index].montant!.toString(),
                   );
                 },
               ),

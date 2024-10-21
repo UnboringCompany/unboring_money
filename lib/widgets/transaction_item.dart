@@ -18,8 +18,8 @@ class TransactionItem extends StatelessWidget {
         ),
         leading: const Icon(Icons.shopping_cart, color: Color(0xFF109186)),
         title: Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-        subtitle: Text(date, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w300)),
-        trailing: Text(amount, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        subtitle: Text('${DateTime.parse(date).toLocal().day.toString().padLeft(2, '0')}/${DateTime.parse(date).toLocal().month.toString().padLeft(2, '0')}/${DateTime.parse(date).toLocal().year}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w300)),
+        trailing: Text('$amount€', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
     );
   }

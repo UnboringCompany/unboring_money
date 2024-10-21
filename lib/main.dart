@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:unboring_money/database/DatabaseHelper.dart';
+import 'package:unboring_money/models/Depense.dart';
 import 'package:unboring_money/screens/my_accounts.dart';
 import 'package:unboring_money/screens/my_budget.dart';
 import 'package:unboring_money/screens/settings.dart';
@@ -64,6 +66,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  List<Depense> _moisDepenses = [];
+  List<Depense> _aVenirDepenses = [];
+  
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMoisDepenses();
+    fetchDepensesAVenir();
+  }
+
+  Future<void> fetchDepensesAVenir() async {
+    final dbHelper = DatabaseHelper();
+    _moisDepenses = await dbHelper.getMoisDepenses();
+    print(_moisDepenses);
+    setState(() {
+      _moisDepenses = _moisDepenses;
+    });
+  }
+
+  Future<void> fetchMoisDepenses() async {
+    final dbHelper = DatabaseHelper();
+    _aVenirDepenses = await dbHelper.getDepensesAVenir();
+    print(_aVenirDepenses);
+    setState(() {
+      _aVenirDepenses = _aVenirDepenses;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +111,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           BudgetSection(budgetRestant: widget.budgetRestant),
           const SizedBox(height: 20),
-          TransactionList(transactions: widget.transactions, upcomingTransactions: widget.upcommingTransactions),
+          TransactionList(transactions: _moisDepenses, upcomingTransactions: _aVenirDepenses),
         ],
       ),
       floatingActionButton: const FloatingAdd(),
