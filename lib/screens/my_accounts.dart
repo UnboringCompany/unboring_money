@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:unboring_money/database/DatabaseHelper.dart';
+import 'package:unboring_money/models/Compte.dart';
 import 'package:unboring_money/widgets/accounts_list.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
@@ -9,6 +11,28 @@ class MyAccountsPage extends StatefulWidget {
 }
 
 class _MyAccountsPageState extends State<MyAccountsPage> {
+
+  Map<Compte, double> _comptes = {};
+  
+  @override
+  void initState() {
+    super.initState();
+    fetchAccounts();
+  }
+
+  Future<void> fetchAccounts() async {
+    final dbHelper = DatabaseHelper();
+    final comptes = await dbHelper.getComptes();
+    for (var compte in comptes) {
+          final spent = await dbHelper.getSpentForAccount(compte.id!);
+          _comptes[compte] = spent;
+    }
+    print(_comptes);
+    setState(() {
+      _comptes = _comptes;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +57,7 @@ class _MyAccountsPageState extends State<MyAccountsPage> {
       ),
       body: Column(
         children: [
-          AccountsList(),
+          AccountsList(accountsList: _comptes),
         ],
       ),
       floatingActionButton: const FloatingAdd(),

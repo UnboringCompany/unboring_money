@@ -48,27 +48,14 @@ class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 
-  final double budgetRestant = 1850.45;
-
-   final List<Map<String, String>> upcommingTransactions = [
-      {'name': 'EDF', 'date': '15/10/2024', 'amount': '47,65€'},
-      {'name': 'Loyer', 'date': '15/10/2024', 'amount': '47,65€'},
-    ];
-
-  final List<Map<String, String>> transactions = [
-    {'name': 'Carrefour', 'date': '04/10/2024', 'amount': '47,65€'},
-    {'name': 'Auchan', 'date': '03/10/2024', 'amount': '47,65€'},
-    {'name': 'Lideule', 'date': '02/10/2024', 'amount': '47,65€'},
-    {'name': 'Action', 'date': '01/10/2024', 'amount': '47,65€'},
-    {'name': 'H&M', 'date': '01/10/2024', 'amount': '47,65€'},
-    {'name': 'Fnac', 'date': '01/10/2024', 'amount': '47,65€'},
-  ];
 }
 
 class _HomePageState extends State<HomePage> {
 
   List<Depense> _moisDepenses = [];
   List<Depense> _aVenirDepenses = [];
+  int _limit = 0;
+  double _spent = 0.0;
   
 
   @override
@@ -76,6 +63,17 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchMoisDepenses();
     fetchDepensesAVenir();
+    fetchLimitSpent();
+  }
+
+  Future<void> fetchLimitSpent() async {
+    final dbHelper = DatabaseHelper();
+    _limit = await dbHelper.getTotalLimit();
+    _spent = await dbHelper.getSpentMonth();
+    setState(() {
+      _limit = _limit;
+      _spent = _spent;
+    });
   }
 
   Future<void> fetchDepensesAVenir() async {
@@ -109,7 +107,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          BudgetSection(budgetRestant: widget.budgetRestant),
+          BudgetSection(budgetRestant: _limit.toDouble() - _spent),
           const SizedBox(height: 20),
           TransactionList(transactions: _moisDepenses, upcomingTransactions: _aVenirDepenses),
         ],
