@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:unboring_money/database/DatabaseHelper.dart';
+import 'package:unboring_money/models/Categorie.dart';
 import 'package:unboring_money/widgets/category_list.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
@@ -9,6 +11,40 @@ class MyBudgetPage extends StatefulWidget {
 }
 
 class _MyBudgetPageState extends State<MyBudgetPage> {
+
+  Map<Categorie, double> _categories = {};
+  int _limit = 1;
+  double _spent = 1.0;
+  
+  @override
+  void initState() {
+    super.initState();
+    fetchAccounts();
+    fetchLimitSpent();
+  }
+
+  Future<void> fetchLimitSpent() async {
+    final dbHelper = DatabaseHelper();
+    _limit = await dbHelper.getTotalLimit();
+    _spent = await dbHelper.getSpentMonth();
+    setState(() {
+      _limit = _limit;
+      _spent = _spent;
+    });
+  }
+
+  Future<void> fetchAccounts() async {
+    final dbHelper = DatabaseHelper();
+    final categories = await dbHelper.getCategories();
+    for (var cat in categories) {
+          final spent = await dbHelper.getSpentForCategory(cat.id!);
+          _categories[cat] = spent;
+    }
+    print(_categories);
+    setState(() {
+      _categories = _categories;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +62,16 @@ class _MyBudgetPageState extends State<MyBudgetPage> {
             icon: const Icon(Icons.add),
             onPressed: () {
               //Pop up to add a new budget
-              Navigator.of(context).pushNamed('/add-category');
+              Navigator.of(context).pushReplacementNamed('/add-category');
             },
           ),
         ],
       ),
-      body: const Column(
+      body: Column(
         children: [
-          BudgetSection(budgetRestant: 1850.45, monthlyBudget: 4200.00),
-          SizedBox(height: 20),
-          CategoryList(),
+          BudgetSection(budgetRestant: _limit.toDouble() - _spent, monthlyBudget: _limit.toDouble()),
+          const SizedBox(height: 20),
+          CategoryList(categoryList: _categories),
         ],
       ),
       floatingActionButton: const FloatingAdd(),

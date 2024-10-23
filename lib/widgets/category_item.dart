@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CategoryItem extends StatelessWidget {
   final String name;
-  final double limit;
+  final int limit;
   final double spent;
   final IconData icon;
 
@@ -28,7 +28,7 @@ class CategoryItem extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 child: LinearProgressIndicator(
-                  value: (limit - spent) / limit,
+                  value: spent / limit.toDouble(),
                   valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF109186)),
                   backgroundColor: Colors.white,
                 ),

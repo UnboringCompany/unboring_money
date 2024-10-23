@@ -4,6 +4,8 @@ import 'package:unboring_money/database/DatabaseHelper.dart';
 import 'package:unboring_money/models/Categorie.dart';
 import 'package:unboring_money/models/Compte.dart';
 import 'package:unboring_money/models/Depense.dart';
+import 'package:unboring_money/widgets/floating_add.dart';
+import 'package:unboring_money/widgets/navbar.dart';
 
 import '../widget/ToggleButtonSelectionAdder.dart';
 
@@ -109,10 +111,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal[50],
+      backgroundColor: const Color(0xFFF0FDFA),
       appBar: AppBar(
-        backgroundColor: Colors.teal[100],
-        title: const Text('UnboringMoney'),
+        scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text('Ajout d\'un nouveau', style: TextStyle(fontWeight: FontWeight.w500)),
+        backgroundColor: const Color(0xFFF0FDFA),
         elevation: 0,
       ),
       body: SafeArea(
@@ -122,16 +126,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    'Ajout d\'un${_selectedTab == 0 ? 'e dépense' : _selectedTab == 1 ? 'e catégorie' : ' compte'}',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
                 // Utilisation du widget ToggleButtonSelectionAdder
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -225,6 +219,9 @@ class _AddExpensePageState extends State<AddExpensePage> {
           ),
         ),
       ),
+      floatingActionButton: const FloatingAdd(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: const UnboringNavBar(),
     );
   }
 }

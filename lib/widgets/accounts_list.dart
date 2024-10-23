@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:unboring_money/widgets/account_item.dart';
 
 class AccountsList extends StatefulWidget {
+
+  final Map accountsList;
   
-  const AccountsList({super.key});
+  const AccountsList({super.key, required this.accountsList});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AccountsListState createState() => _AccountsListState();
 }
 
 class _AccountsListState extends State<AccountsList> {
-  bool showUpcomingTransactions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,17 @@ class _AccountsListState extends State<AccountsList> {
             const SizedBox(height: 30),
             Expanded(
               child: ListView.builder(
-                itemCount: [1,2,3].length,
+                itemCount: widget.accountsList.length,
                 itemBuilder: (context, index) {
-                  return const AccountItem(name: 'Compte PayPal', spent: 2000, icon: Icons.account_balance_wallet);
+                  // Récupérer la clé (Compte) et la valeur (dépense) à partir de la Map
+                  final compte = widget.accountsList.keys.elementAt(index);
+                  final spent = widget.accountsList[compte];
+
+                  return AccountItem(
+                    name: compte.nom,  // Assure-toi que 'nom' est défini dans Compte
+                    spent: spent ?? 0,   // Utiliser la dépense associée
+                    icon: Icons.account_balance_wallet,
+                  );
                 },
               ),
             ),

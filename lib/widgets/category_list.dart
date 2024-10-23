@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:unboring_money/widgets/category_item.dart';
 
 class CategoryList extends StatefulWidget {
+
+  final Map categoryList;
   
-  const CategoryList({super.key});
+  const CategoryList({super.key, required this.categoryList});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -11,7 +13,6 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
-  bool showUpcomingTransactions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,25 +23,29 @@ class _CategoryListState extends State<CategoryList> {
         child: Column(
           children: [
             const SizedBox(height: 15),
-            const Padding(
-              padding: EdgeInsets.only(left: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
               child: Row(
                 children: [
-                Text("Toutes les catégories", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                SizedBox(width: 5),
-                Text("(3)", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black54)),
+                const Text("Toutes les catégories", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                const SizedBox(width: 5),
+                Text("(${widget.categoryList.length})", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black54)),
                 ],
               ),
             ),
             const SizedBox(height: 15),
             Expanded(
               child: ListView.builder(
-                itemCount: [1,2,3].length,
+                itemCount: widget.categoryList.length,
                 itemBuilder: (context, index) {
-                  return const CategoryItem(
-                    name: "Alimentation",
-                    limit: 200,
-                    spent: 150,
+
+                  final category = widget.categoryList.keys.elementAt(index);
+                  final spent = widget.categoryList[category];
+
+                  return CategoryItem(
+                    name: category.nom,
+                    limit: category.limite,
+                    spent: spent,
                     icon: Icons.food_bank
                   );
                 },
