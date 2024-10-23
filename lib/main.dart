@@ -151,7 +151,7 @@ class BudgetSection extends StatelessWidget {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/budget');
+              Navigator.pushReplacementNamed(context, '/budget');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF109186),
