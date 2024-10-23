@@ -30,7 +30,7 @@ class UnboringMoneyApp extends StatelessWidget {
         '/add-expense': (context) => const AddExpensePage(initialTabIndex: 0),
         '/add-category': (context) => const AddExpensePage(initialTabIndex: 1),
         '/add-account': (context) => const AddExpensePage(initialTabIndex: 2),
-        '/stats': (context) => StatsPage(),
+        '/stats': (context) => const StatsPage(initialTabIndex: 0,),
         '/wallet': (context) => MyAccountsPage(),
         '/budget': (context) => MyBudgetPage(),
         '/settings': (context) => SettingsPage(),
