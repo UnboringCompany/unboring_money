@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unboring_money/database/DatabaseHelper.dart';
 import 'package:unboring_money/models/Depense.dart';
 import 'package:unboring_money/screens/my_accounts.dart';
@@ -132,6 +133,11 @@ class BudgetSection extends StatelessWidget {
     return daysLeft.toString();
   }
 
+  Future<String> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userName') ?? 'Utilisateur';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -140,6 +146,24 @@ class BudgetSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          FutureBuilder<String>(
+            future: getUserName(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasData) {
+                return Text(
+                  "Bonjour ${snapshot.data},",
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                );
+              }
+              return const Text(
+                "Bonjour,",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              );
+            }
+          ),
           Text(
             'Reste à dépenser pour les $daysLeft prochains jours',
             style: const TextStyle(fontSize: 14, color: Colors.black54, fontWeight: FontWeight.w300),
