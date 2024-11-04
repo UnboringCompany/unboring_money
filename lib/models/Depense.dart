@@ -5,7 +5,6 @@ class Depense {
   final double montant;
   final String date;
   final int compteId;
-  final String recurrence;
 
   Depense({
     this.id,
@@ -14,7 +13,6 @@ class Depense {
     required this.montant,
     required this.date,
     required this.compteId,
-    required this.recurrence,
   });
 
   // Convert a Depense into a Map.
@@ -26,7 +24,6 @@ class Depense {
       'montant': montant,
       'date': date,
       'compteId': compteId,
-      'recurrence': recurrence,
     };
   }
 }

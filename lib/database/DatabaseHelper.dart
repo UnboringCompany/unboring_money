@@ -36,8 +36,7 @@ class DatabaseHelper {
             categorieId INTEGER,
             montant REAL,
             date TEXT,
-            compteId INTEGER,
-            recurrence TEXT
+            compteId INTEGER
           )
         ''');
 
@@ -185,7 +184,6 @@ class DatabaseHelper {
         date: maps[i]['date'],
         compteId: maps[i]['compteId'],
         categorieId: maps[i]['categorieId'],
-        recurrence: maps[i]['recurrence'],
       );
     });
   }
@@ -214,7 +212,6 @@ class DatabaseHelper {
         date: maps[i]['date'],
         compteId: maps[i]['compteId'],
         categorieId: maps[i]['categorieId'],
-        recurrence: maps[i]['recurrence'],
       );
     });
   }
@@ -246,7 +243,6 @@ class DatabaseHelper {
         date: maps[i]['date'],
         compteId: maps[i]['compteId'],
         categorieId: maps[i]['categorieId'],
-        recurrence: maps[i]['recurrence'],
       );
     });
   }
