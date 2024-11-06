@@ -117,6 +117,12 @@ class _BarChartState extends State<BarChart> {
                             (data) => getColorForCategory(data['order'] as int))
                         .toList(),
                   ),
+                  label: LabelEncode(
+                      encoder: (tuple) => Label(
+                        '${tuple['valeur']}',
+                        // LabelStyle(fontSize: 12),
+                      ),
+                    ),
                   modifiers: [StackModifier()],
                 );
               }).toList(),

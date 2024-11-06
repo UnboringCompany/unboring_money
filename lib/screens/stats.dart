@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
 import 'package:unboring_money/database/DatabaseHelper.dart';
-import 'package:graphic/graphic.dart';
-import 'package:intl/intl.dart';
 import 'package:unboring_money/models/Depense.dart';
 import 'package:unboring_money/models/Categorie.dart';
 import 'package:unboring_money/models/Compte.dart';
-import 'package:unboring_money/widgets/charts/ToggleButtonSelectionChart.dart';
 import 'package:unboring_money/widgets/charts/BarChart.dart';
 
 class StatsPage extends StatefulWidget {
@@ -22,12 +19,11 @@ class StatsPage extends StatefulWidget {
 
 class _StatsPageState extends State<StatsPage> {
   List<Map<String, dynamic>> _depenses = [];
-  late int _selectedTab;
+  List<Map<String, dynamic>> allDepenseData = [];
 
   @override
   void initState() {
     super.initState();
-    _selectedTab = widget.initialTabIndex;
     fetchDepenses();
   }
 
@@ -67,6 +63,7 @@ class _StatsPageState extends State<StatsPage> {
 
     setState(() {
       _depenses = filteredDepenseData;
+      allDepenseData = allDepenseData;
     });
   }
 
@@ -89,8 +86,9 @@ class _StatsPageState extends State<StatsPage> {
       // print(entry);
       return {
         'valeur': entry['valeur'],
-        'order' : entry['categorieId'],
-        'legende': entry['legende'], // Utilisation de la date formatée comme légende
+        'order': entry['categorieId'],
+        'legende':
+            entry['legende'], // Utilisation de la date formatée comme légende
       };
     }).toList();
 
@@ -111,13 +109,6 @@ class _StatsPageState extends State<StatsPage> {
         categorieId % colors.length]; // Distribution cyclique des couleurs
   }
 
-  // Fonction pour gérer le changement de sélection dans le ToggleButton
-  void _onSelectionChanged(int index) {
-    setState(() {
-      _selectedTab = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,12 +124,11 @@ class _StatsPageState extends State<StatsPage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Center(
-              child: ToggleButtonSelectionChart(
-                onSelectionChanged: _onSelectionChanged,
-                initialIndex: _selectedTab,
+              child: Text(
+                "Vos dernières dépenses !",
               ),
             ),
           ),
@@ -146,19 +136,11 @@ class _StatsPageState extends State<StatsPage> {
             child: Padding(
               padding: const EdgeInsets.only(
                   bottom: 60.0), // Add a margin at the bottom
-              child: _selectedTab == 0
-                  ? BarChart(
-                      // Afficher BarChart seulement si selectedTab est 0
-                      data: _depenses,
-                      // selectedTab: _selectedTab,
-                    )
-                  : const Center(
-                      // TODO : Remplacer par un chart rond après
-                      child: Text(
-                        "No data available", // Message à afficher sinon
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
-                    ),
+              child: 
+                BarChart(
+                  // Afficher BarChart 
+                  data: _depenses,
+                )
             ),
           ),
         ],
