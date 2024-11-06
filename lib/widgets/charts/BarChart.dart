@@ -20,31 +20,6 @@ class _BarChartState extends State<BarChart> {
   num? selectedOrder;
   Offset? tapPosition;
 
-  void showTooltip(BuildContext context, String legend, double value, num order,
-      Offset position) {
-    print("in tooltip");
-    String formattedLegend = legend;
-
-    try {
-      print("trying to format : $legend");
-      final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-      final formattedDate = dateFormat.parse(legend);
-      formattedLegend = DateFormat("dd/MM/yyyy").format(formattedDate);
-      print("formatted to : $formattedLegend");
-    } catch (e) {
-      // If the legend can't be parsed as a date, leave it as it is.
-      print("legend : $legend");
-      formattedLegend = legend;
-    }
-
-    setState(() {
-      selectedLegend = formattedLegend;
-      selectedValue = value;
-      selectedOrder = order;
-      tapPosition = position;
-    });
-  }
-
   Color getColorForCategory(int categorieId) {
     List<Color> colors = [
       Colors.red,
@@ -78,7 +53,7 @@ class _BarChartState extends State<BarChart> {
         final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         final formattedDate = dateFormat.parse(legend);
         legend = DateFormat("dd/MM/yyyy").format(formattedDate);
-      // ignore: empty_catches
+        // ignore: empty_catches
       } catch (e) {}
 
       groupedData.putIfAbsent(legend, () => []).add(entry);
@@ -100,85 +75,52 @@ class _BarChartState extends State<BarChart> {
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: GestureDetector(
-            onTapDown: (details) {
-              final tapOffset = details.globalPosition;
-              // Logic to detect which bar was tapped based on tapOffset and show the tooltip
-              // For demonstration purposes, we'll assume the first data point is tapped.
-              if (chartData.isNotEmpty) {
-                final dataPoint = chartData[0];
-                showTooltip(
-                  context,
-                  dataPoint['legende'] as String,
-                  dataPoint['valeur'] as double,
-                  dataPoint['order'] as num,
-                  tapOffset,
-                );
-              }
-            },
-            child: Chart(
-              data: chartData,
-              variables: {
-                'legende': Variable(
-                  accessor: (Map map) => map['legende'] as String,
-                ),
-                // 'legende': Variable(
-                //   accessor: (Map map) {
-                //     String legend = map['legende'] as String;
-                //     String formattedLegend = legend;
-
-                //     try {
-                //       final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-                //       final formattedDate = dateFormat.parse(legend);
-                //       formattedLegend = DateFormat("dd/MM/yyyy").format(formattedDate);
-                //     } catch (e) {
-                //       // If the legend can't be parsed as a date, leave it as it is.
-                //     }
-
-                //     return formattedLegend;
-                //   },
-                // ),
-                'valeur': Variable(
-                  accessor: (Map map) => map['valeur'] as num,
-                ),
-                'order': Variable(
-                  accessor: (Map map) => map['order'] as num,
-                ),
-              },
-              marks: groupedData.entries.map((entry) {
-                final entries = entry.value;
-                final colorValues = entries
-                    .map((data) => getColorForCategory(data['order'] as int))
-                    .toList();
-
-                // Vérifiez que colorValues a au moins deux couleurs
-                if (colorValues.length < 2) {
-                  colorValues.add(Colors
-                      .blue); // Ajouter une couleur par défaut pour éviter l'erreur
-                }
-
-                return IntervalMark(
-                  position: Varset('legende') * Varset('valeur'),
-                  color: ColorEncode(
-                    variable: 'order',
-                    values: colorValues,
-                  ),
-                  label: LabelEncode(
-                    encoder: (tuple) => Label(
-                      '${tuple['valeur']}',
-                      // LabelStyle(fontSize: 12),
-                    ),
-                  ),
-                  modifiers: [StackModifier()],
-                );
-              }).toList(),
-              axes: [
-                Defaults.horizontalAxis,
-                Defaults.verticalAxis,
-              ],
-              coord: RectCoord(
-                horizontalRange: [0.1, 0.9],
+          child: Chart(
+            data: chartData,
+            variables: {
+              'legende': Variable(
+                accessor: (Map map) => map['legende'] as String,
               ),
+              'valeur': Variable(
+                accessor: (Map map) => map['valeur'] as num,
+              ),
+              'order': Variable(
+                accessor: (Map map) => map['order'] as num,
+              ),
+            },
+            marks: groupedData.entries.map((entry) {
+              final entries = entry.value;
+              final colorValues = entries
+                  .map((data) => getColorForCategory(data['order'] as int))
+                  .toList();
+
+              // Vérifiez que colorValues a au moins deux couleurs
+              if (colorValues.length < 2) {
+                colorValues.add(Colors
+                    .blue); // Ajouter une couleur par défaut pour éviter l'erreur
+              }
+
+              return IntervalMark(
+                position: Varset('legende') * Varset('valeur'),
+                color: ColorEncode(
+                  variable: 'order',
+                  values: colorValues,
+                ),
+                label: LabelEncode(
+                  encoder: (tuple) => Label(
+                    '${tuple['valeur']}',
+                    // LabelStyle(fontSize: 12),
+                  ),
+                ),
+                modifiers: [StackModifier()],
+              );
+            }).toList(),
+            axes: [
+              Defaults.horizontalAxis,
+              Defaults.verticalAxis,
+            ],
+            coord: RectCoord(
+              horizontalRange: [0.1, 0.9],
             ),
           ),
         ),
