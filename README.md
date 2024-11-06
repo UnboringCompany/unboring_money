@@ -10,11 +10,14 @@ A dedicated section for adding entries allows users to quickly input new expense
 
 ### Analytics
 
-To visualize spending trends, Unboring Money incorporates graphical analysis using the [graphic](https://fluttergems.dev/packages/graphic/) library. This integration enables users to see monthly breakdowns, comparisons between expense categories, and progress toward budget goals. These visualizations simplify the process of identifying financial patterns and making informed adjustments.
+To visualize spending trends, Unboring Money incorporates graphical analysis using the [graphic](https://fluttergems.dev/packages/graphic/) library. This integration enables users to see expanses per date, comparisons between expense categories, and progress toward budget goals. These visualizations simplify the process of identifying financial patterns and making informed adjustments.
 
 ### Customization Options
 
 The app offers a personalized experience by allowing users to input their name, which appears in a customized welcome message each time they access the app. This small detail enhances the user experience, making Unboring Money feel personal and tailored to each individual.
+
+### Animation
+This feature adds a smooth animation to enhance the user experience as they navigate between different tabs. Using a combination of CSS transitions and JavaScript, each tab fades in and out when selected, giving users visual feedback and making the interface feel more responsive. The animation is triggered whenever the _selectedTab variable changes, so the transition aligns seamlessly with tab switching. This approach ensures that the animations remain lightweight, responsive, and easy to maintain across different parts of the application.
 
 ## Development Information
 
