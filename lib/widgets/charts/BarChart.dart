@@ -1,145 +1,165 @@
-// BarChart.dart
-
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
-import 'package:unboring_money/models/Depense.dart';
+import 'package:intl/intl.dart';
 
-class BarChart extends StatelessWidget {
-  final List<Depense> depenses;
-  final int selectedTab;
+class BarChart extends StatefulWidget {
+  final List<Map<String, dynamic>> data;
 
   const BarChart({
-    Key? key,
-    required this.depenses,
-    required this.selectedTab,
-  }) : super(key: key);
+    super.key,
+    required this.data,
+  });
+
+  @override
+  _BarChartState createState() => _BarChartState();
+}
+
+class _BarChartState extends State<BarChart> {
+  String? selectedLegend;
+  double? selectedValue;
+  num? selectedOrder;
+  Offset? tapPosition;
+
+  Color getColorForCategory(int categorieId) {
+    List<Color> colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.yellow,
+    ];
+    return colors[
+        categorieId % colors.length]; // Distribution cyclique des couleurs
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Group expenses by category and calculate the sum of expenses for each category
-    final categorySums = depenses.fold<Map<int, double>>({}, (map, depense) {
-      map[depense.categorieId] = (map[depense.categorieId] ?? 0) + depense.montant;
-      return map;
-    });
-
-    // Convert the categorySums map into a list of maps that can be used as data for the chart
-    final chartData = categorySums.entries.map((entry) {
-      return {
-        'category': entry.key,
-        'amount': entry.value,
-      };
-    }).toList();
-
-    if (selectedTab == 0) {
-      // Bar Graph
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Chart(
-                data: chartData,
-                variables: {
-                  'category': Variable(
-                    accessor: (Map map) => map['category'] as int,
-                  ),
-                  'amount': Variable(
-                    accessor: (Map map) => map['amount'] as num,
-                  ),
-                },
-                marks: [
-                  IntervalMark(
-                    label: LabelEncode(
-                      encoder: (tuple) => tuple['amount'], // Return the numeric value as a string
-                    ),
-                  ),
-                ],
-                axes: [
-                  Defaults.horizontalAxis,
-                  Defaults.verticalAxis,
-                ],
-                coord: RectCoord(
-                  horizontalRange: [0.1, 0.9],
-                ),
-              ),
-            ),
-            // Custom legend
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: chartData.map((data) {
-                return Row(
-                  children: [
-                    Container(
-                      width: 16,
-                      height: 16,
-                      color: Defaults.colors10[(data['category'] as int) % Defaults.colors10.length],
-                    ),
-                    const SizedBox(width: 4),
-                    Text('Category ${data['category'].toString()}'),
-                  ],
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      );
-    } else if (selectedTab == 1) {
-      // Pie Chart
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: Chart(
-                data: chartData,
-                variables: {
-                  'category': Variable(
-                    accessor: (Map map) => map['category'] as int,
-                  ),
-                  'amount': Variable(
-                    accessor: (Map map) => map['amount'] as num,
-                  ),
-                },
-                marks: [
-                  IntervalMark(
-                    position: Varset('amount') / Varset('category'),
-                    color: ColorEncode(variable: 'category', values: Defaults.colors10),
-                    modifiers: [StackModifier()],
-                  ),
-                ],
-                coord: PolarCoord(
-                  transposed: true,
-                  startRadius: 0.1,
-                ),
-              ),
-            ),
-            // Custom legend
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: chartData.map((data) {
-                return Row(
-                  children: [
-                    Container(
-                      width: 16,
-                      height: 16,
-                      color: Defaults.colors10[(data['category'] as int) % Defaults.colors10.length],
-                    ),
-                    const SizedBox(width: 4),
-                    Text('Category ${data['category'].toString()}'),
-                  ],
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      );
-    } else {
+    if (widget.data.isEmpty) {
       return const Center(
         child: Text(
-          "No data available",
+          "Aucune donnée ne correspond à la recherche",
           style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
       );
     }
+
+    // Group data by legend (e.g., date) and prepare data for stacked bar chart
+    final Map<String, List<Map<String, dynamic>>> groupedData = {};
+    for (var entry in widget.data) {
+      var legend = entry['legende'] as String;
+
+      try {
+        final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        final formattedDate = dateFormat.parse(legend);
+        legend = DateFormat("dd/MM/yyyy").format(formattedDate);
+        // ignore: empty_catches
+      } catch (e) {}
+
+      groupedData.putIfAbsent(legend, () => []).add(entry);
+    }
+
+    // Prepare chart data format
+    final chartData = <Map<String, dynamic>>[];
+    groupedData.forEach((legend, entries) {
+      for (var entry in entries) {
+        chartData.add({
+          'legende': legend,
+          'valeur': entry['valeur'] ?? 0,
+          'order': entry['order'] ?? 0,
+        });
+      }
+    });
+
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Chart(
+            data: chartData,
+            variables: {
+              'legende': Variable(
+                accessor: (Map map) => map['legende'] as String,
+              ),
+              'valeur': Variable(
+                accessor: (Map map) => map['valeur'] as num,
+              ),
+              'order': Variable(
+                accessor: (Map map) => map['order'] as num,
+              ),
+            },
+            marks: groupedData.entries.map((entry) {
+              final entries = entry.value;
+              final colorValues = entries
+                  .map((data) => getColorForCategory(data['order'] as int))
+                  .toList();
+
+              // Vérifiez que colorValues a au moins deux couleurs
+              if (colorValues.length < 2) {
+                colorValues.add(Colors
+                    .blue); // Ajouter une couleur par défaut pour éviter l'erreur
+              }
+
+              return IntervalMark(
+                position: Varset('legende') * Varset('valeur'),
+                color: ColorEncode(
+                  variable: 'order',
+                  values: colorValues,
+                ),
+                label: LabelEncode(
+                  encoder: (tuple) => Label(
+                    '${tuple['valeur']}',
+                    // LabelStyle(fontSize: 12),
+                  ),
+                ),
+                modifiers: [StackModifier()],
+              );
+            }).toList(),
+            axes: [
+              Defaults.horizontalAxis,
+              Defaults.verticalAxis,
+            ],
+            coord: RectCoord(
+              horizontalRange: [0.1, 0.9],
+            ),
+          ),
+        ),
+        if (selectedLegend != null &&
+            selectedValue != null &&
+            selectedOrder != null &&
+            tapPosition != null)
+          Positioned(
+            left: tapPosition!.dx - 50,
+            top: tapPosition!.dy - 80,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Date: $selectedLegend',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                    Text(
+                      'Value: $selectedValue',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                    Text(
+                      'Order: $selectedOrder',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
