@@ -47,7 +47,7 @@ class _BarChartState extends State<BarChart> {
     if (widget.data.isEmpty) {
       return const Center(
         child: Text(
-          "No data available",
+          "Aucune donnée ne correspond à la recherche",
           style: TextStyle(fontSize: 18, color: Colors.grey),
         ),
       );
@@ -107,22 +107,25 @@ class _BarChartState extends State<BarChart> {
               },
               marks: groupedData.entries.map((entry) {
                 final entries = entry.value;
-                print(entries);
+                final colorValues = entries.map((data) => getColorForCategory(data['order'] as int)).toList();
+
+                // Vérifiez que colorValues a au moins deux couleurs
+                if (colorValues.length < 2) {
+                  colorValues.add(Colors.grey); // Ajouter une couleur par défaut pour éviter l'erreur
+                }
+
                 return IntervalMark(
                   position: Varset('legende') * Varset('valeur'),
                   color: ColorEncode(
                     variable: 'order',
-                    values: entries
-                        .map(
-                            (data) => getColorForCategory(data['order'] as int))
-                        .toList(),
+                    values: colorValues,
                   ),
                   label: LabelEncode(
-                      encoder: (tuple) => Label(
-                        '${tuple['valeur']}',
-                        // LabelStyle(fontSize: 12),
-                      ),
+                    encoder: (tuple) => Label(
+                      '${tuple['valeur']}',
+                      // LabelStyle(fontSize: 12),
                     ),
+                  ),
                   modifiers: [StackModifier()],
                 );
               }).toList(),
@@ -156,15 +159,15 @@ class _BarChartState extends State<BarChart> {
                   children: [
                     Text(
                       'Date: $selectedLegend',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Text(
                       'Value: $selectedValue',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     Text(
                       'Order: $selectedOrder',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
