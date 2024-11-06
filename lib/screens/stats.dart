@@ -123,12 +123,12 @@ class _StatsPageState extends State<StatsPage> {
     required List<int> selectedAccounts,
     String? sortBy,
   }) {
-    print("Début du filtrage...");
-    print("Date de début : $startDate, Date de fin : $endDate");
-    print("Catégories sélectionnées : $selectedCategories");
-    print("Comptes sélectionnés : $selectedAccounts");
-    print("Data avant filtrage : $data");
-    print("Order by $sortBy");
+    // print("Début du filtrage...");
+    // print("Date de début : $startDate, Date de fin : $endDate");
+    // print("Catégories sélectionnées : $selectedCategories");
+    // print("Comptes sélectionnés : $selectedAccounts");
+    // print("Data avant filtrage : $data");
+    // print("Order by $sortBy");
 
     // Filtrage par date, catégorie, et compte
     List<Map<String, dynamic>> filteredData = data.where((entry) {
@@ -184,8 +184,7 @@ class _StatsPageState extends State<StatsPage> {
           legendeValue = entry['compte'];
           break;
         default:
-          legendeValue =
-              entry['legende']; // Par défaut, la légende reste la date
+          legendeValue = entry['legende']; // Par défaut, la légende reste la date
       }
       return {
         'valeur': entry['valeur'],
@@ -194,9 +193,10 @@ class _StatsPageState extends State<StatsPage> {
       };
     }).toList();
 
-    print("Données finales après filtrage : ${resultData.length}");
+    // print("Données finales après filtrage : ${resultData.length}");
     return resultData;
   }
+
 
   // Fonction pour afficher la boîte de dialogue de filtre
   void _showFilterDialog() {

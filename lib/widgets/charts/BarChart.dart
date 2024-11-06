@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
+import 'package:intl/intl.dart';
 
 class BarChart extends StatefulWidget {
   final List<Map<String, dynamic>> data;
@@ -21,8 +22,23 @@ class _BarChartState extends State<BarChart> {
 
   void showTooltip(BuildContext context, String legend, double value, num order,
       Offset position) {
+    print("in tooltip");
+    String formattedLegend = legend;
+
+    try {
+      print("trying to format : $legend");
+      final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+      final formattedDate = dateFormat.parse(legend);
+      formattedLegend = DateFormat("dd/MM/yyyy").format(formattedDate);
+      print("formatted to : $formattedLegend");
+    } catch (e) {
+      // If the legend can't be parsed as a date, leave it as it is.
+      print("legend : $legend");
+      formattedLegend = legend;
+    }
+
     setState(() {
-      selectedLegend = legend;
+      selectedLegend = formattedLegend;
       selectedValue = value;
       selectedOrder = order;
       tapPosition = position;
@@ -56,7 +72,15 @@ class _BarChartState extends State<BarChart> {
     // Group data by legend (e.g., date) and prepare data for stacked bar chart
     final Map<String, List<Map<String, dynamic>>> groupedData = {};
     for (var entry in widget.data) {
-      final legend = entry['legende'] as String;
+      var legend = entry['legende'] as String;
+
+      try {
+        final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        final formattedDate = dateFormat.parse(legend);
+        legend = DateFormat("dd/MM/yyyy").format(formattedDate);
+      // ignore: empty_catches
+      } catch (e) {}
+
       groupedData.putIfAbsent(legend, () => []).add(entry);
     }
 
@@ -98,6 +122,22 @@ class _BarChartState extends State<BarChart> {
                 'legende': Variable(
                   accessor: (Map map) => map['legende'] as String,
                 ),
+                // 'legende': Variable(
+                //   accessor: (Map map) {
+                //     String legend = map['legende'] as String;
+                //     String formattedLegend = legend;
+
+                //     try {
+                //       final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                //       final formattedDate = dateFormat.parse(legend);
+                //       formattedLegend = DateFormat("dd/MM/yyyy").format(formattedDate);
+                //     } catch (e) {
+                //       // If the legend can't be parsed as a date, leave it as it is.
+                //     }
+
+                //     return formattedLegend;
+                //   },
+                // ),
                 'valeur': Variable(
                   accessor: (Map map) => map['valeur'] as num,
                 ),
@@ -107,11 +147,14 @@ class _BarChartState extends State<BarChart> {
               },
               marks: groupedData.entries.map((entry) {
                 final entries = entry.value;
-                final colorValues = entries.map((data) => getColorForCategory(data['order'] as int)).toList();
+                final colorValues = entries
+                    .map((data) => getColorForCategory(data['order'] as int))
+                    .toList();
 
                 // Vérifiez que colorValues a au moins deux couleurs
                 if (colorValues.length < 2) {
-                  colorValues.add(Colors.grey); // Ajouter une couleur par défaut pour éviter l'erreur
+                  colorValues.add(Colors
+                      .blue); // Ajouter une couleur par défaut pour éviter l'erreur
                 }
 
                 return IntervalMark(
