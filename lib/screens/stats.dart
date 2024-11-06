@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:unboring_money/widgets/floating_add.dart';
 import 'package:unboring_money/widgets/navbar.dart';
 import 'package:unboring_money/database/DatabaseHelper.dart';
-import 'package:graphic/graphic.dart';
 import 'package:unboring_money/models/Depense.dart';
 import 'package:unboring_money/widgets/charts/ToggleButtonSelectionChart.dart';
 import 'package:unboring_money/widgets/charts/BarChart.dart';
