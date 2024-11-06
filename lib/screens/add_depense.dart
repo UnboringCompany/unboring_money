@@ -108,6 +108,40 @@ class _AddExpensePageState extends State<AddExpensePage> {
     });
   }
 
+  void _onSubmit() {
+    if (_selectedTab == 0) {
+      final depense = Depense(
+          titre: _titreController.text,
+          montant: double.parse(_montantController.text),
+          categorieId: _selectedCategorieId!,
+          date: selectedDate.toIso8601String(),
+          compteId: _selectedCompteId!);
+      final dbHelper = DatabaseHelper();
+      dbHelper.insertDepense(depense);
+      _titreController.text = "";
+      _montantController.text = "";
+      _selectedCategorieId = null;
+      _selectedCompteId = null;
+    }
+
+    if (_selectedTab == 1) {
+      final categorie = Categorie(
+          nom: _categorieNomController.text,
+          limite: int.parse(_categorieLimiteController.text));
+      final dbHelper = DatabaseHelper();
+      dbHelper.insertCategorie(categorie);
+      _categorieNomController.text = "";
+      _categorieLimiteController.text = "";
+    }
+
+    if (_selectedTab == 2) {
+      final compte = Compte(nom: _compteNomController.text);
+      final dbHelper = DatabaseHelper();
+      dbHelper.insertCompte(compte);
+      _compteNomController.text = "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,7 +160,6 @@ class _AddExpensePageState extends State<AddExpensePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Utilisation du widget ToggleButtonSelectionAdder
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
@@ -134,72 +167,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                if (_selectedTab == 0)
-                  ExpenseForm(
-                    selectDate: _selectDate,
-                    selectedDate: selectedDate,
-                    categories: _categories,
-                    comptes: _comptes,
-                    selectedCategorieId: _selectedCategorieId,
-                    selectedCompteId: _selectedCompteId,
-                    onCategorieChanged: (int? newValue) {
-                      setState(() {
-                        _selectedCategorieId = newValue;
-                      });
-                    },
-                    onCompteChanged: (int? newValue) {
-                      setState(() {
-                        _selectedCompteId = newValue;
-                      });
-                    },
-                    titreController: _titreController,  // Ajout du controller pour le titre
-                    montantController: _montantController,  // Ajout du controller pour le montant
-                  ),
-                if (_selectedTab == 1) 
-                    CategoryForm(
-                    categorieNomController: _categorieNomController,
-                    categorieLimiteController: _categorieLimiteController,
-                  ),
-                if (_selectedTab == 2)
-                  AccountForm(
-                    compteNomController: _compteNomController,
-                  ),
+
+                // Utilisation d'AnimatedSwitcher pour animer le changement de formulaire
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: _getForm(), // Appelle une méthode qui retourne le bon formulaire
+                ),
+
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () {
-                        if (_selectedTab == 0) {
-                          final depense = Depense(
-                              titre: _titreController.text,
-                              montant: double.parse(_montantController.text),
-                              categorieId: _selectedCategorieId!,
-                              date: selectedDate.toIso8601String(),
-                              compteId: _selectedCompteId!);
-                          final dbHelper = DatabaseHelper();
-                          dbHelper.insertDepense(depense);
-                          _titreController.text = "";
-                          _montantController.text = "";
-                          _selectedCategorieId = null;
-                          _selectedCompteId = null;
-                        }
-
-                        if (_selectedTab == 1) {
-                          final categorie = Categorie(
-                              nom: _categorieNomController.text,
-                              limite: int.parse(_categorieLimiteController.text));
-                          final dbHelper = DatabaseHelper();
-                          dbHelper.insertCategorie(categorie);
-                          _categorieNomController.text = "";
-                          _categorieLimiteController.text = "";
-                        }
-
-                        if (_selectedTab == 2) {
-                          final compte = Compte(nom: _compteNomController.text);
-                          final dbHelper = DatabaseHelper();
-                          dbHelper.insertCompte(compte);
-                          _compteNomController.text = "";
-                        }
-                      },
+                    onPressed: _onSubmit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal[700],
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -224,6 +205,48 @@ class _AddExpensePageState extends State<AddExpensePage> {
       bottomNavigationBar: const UnboringNavBar(),
     );
   }
+
+  // Méthode pour renvoyer le formulaire correspondant
+  Widget _getForm() {
+    switch (_selectedTab) {
+      case 0:
+        return ExpenseForm(
+          key: const ValueKey('expenseForm'),
+          selectDate: _selectDate,
+          selectedDate: selectedDate,
+          categories: _categories,
+          comptes: _comptes,
+          selectedCategorieId: _selectedCategorieId,
+          selectedCompteId: _selectedCompteId,
+          onCategorieChanged: (int? newValue) {
+            setState(() {
+              _selectedCategorieId = newValue;
+            });
+          },
+          onCompteChanged: (int? newValue) {
+            setState(() {
+              _selectedCompteId = newValue;
+            });
+          },
+          titreController: _titreController,
+          montantController: _montantController,
+        );
+      case 1:
+        return CategoryForm(
+          key: const ValueKey('categoryForm'),
+          categorieNomController: _categorieNomController,
+          categorieLimiteController: _categorieLimiteController,
+        );
+      case 2:
+        return AccountForm(
+          key: const ValueKey('accountForm'),
+          compteNomController: _compteNomController,
+        );
+      default:
+        return Container();
+    }
+  }
+
 }
 
 // Formulaire d'ajout de dépense
